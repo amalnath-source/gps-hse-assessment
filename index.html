@@ -202,7 +202,7 @@ $('btnLogin').addEventListener('click', async () => {
     $('consentName').textContent = S.info.name;
     $('fQ').textContent = S.info.total;
     $('resumeNote').classList.toggle('hidden', !S.info.resume);
-    show('sConsent');
+    show('sConsent'); api('ping').catch(() => {});
   } catch (e) {
     $('loginErr').textContent = e.message;
   } finally {
@@ -254,7 +254,7 @@ $('btnRetryCam').addEventListener('click', () => {
   try { const C = window.AudioContext || window.webkitAudioContext; if (C && !S.audioCtx) { S.audioCtx = new C(); S.audioCtx.resume(); } } catch (e) {}
   startDevice();
 });
-$('btnDeviceOk').addEventListener('click', () => show('sRules'));
+$('btnDeviceOk').addEventListener('click', () => { show('sRules'); api('ping').catch(() => {}); });
 
 function pickMime() {
   if (!window.MediaRecorder) return '';
