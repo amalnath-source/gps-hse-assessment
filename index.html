@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>GPS HSE Competency Assessment</title>
+<style>
+:root{--navy:#0b2545;--teal:#13827a;--bg:#f4f6f9;--card:#fff;--text:#1d2733;--muted:#5d6b7a;--red:#c0392b;--amber:#b9770e;--green:#1e8449;--line:#dde3ea}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+body.noselect{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+header{background:var(--navy);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+header h1{font-size:15px;margin:0;font-weight:600}
+.bar-grad{height:4px;background:linear-gradient(90deg,#C0392B,#E8711A,#F5A623)}
+.testbanner{background:var(--red);color:#fff;text-align:center;font-size:12px;font-weight:700;padding:6px;letter-spacing:.5px}
+main{max-width:680px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;margin-bottom:14px}
+h2{font-size:18px;margin:0 0 12px}
+p,li{font-size:14px;line-height:1.55}
+ul{padding-left:20px;margin:8px 0}
+label{display:block;font-size:13px;color:var(--muted);margin:12px 0 4px}
+input[type=text]{width:100%;padding:12px;border:1px solid var(--line);border-radius:6px;font-size:16px}
+#code{text-transform:uppercase;letter-spacing:3px;font-weight:700}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:13px;margin-top:14px;line-height:1.5}
+.chk input{margin-top:3px;width:18px;height:18px;flex:0 0 auto}
+button{background:var(--navy);color:#fff;border:0;border-radius:6px;padding:14px 16px;font-size:15px;font-weight:600;cursor:pointer;width:100%;margin-top:14px}
+button.secondary{background:#fff;color:var(--navy);border:1px solid var(--navy)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.hidden{display:none!important}
+.err{color:var(--red);font-size:13px;margin-top:10px;min-height:1em}
+.status{font-size:13px;margin-top:8px}
+.ok{color:var(--green)}.bad{color:var(--red)}
+video#cam{width:100%;max-width:300px;border-radius:8px;background:#000;display:block;margin:0 auto}
+video#cam.pip{position:fixed;right:10px;bottom:10px;width:96px;border:2px solid var(--teal);z-index:5;margin:0}
+.meter{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:6px}
+.meter div{height:100%;width:0;background:var(--green);transition:width .1s}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.fact{background:var(--bg);border-radius:8px;padding:10px}
+.fact b{display:block;font-size:18px;color:var(--navy)}
+.fact span{font-size:12px;color:var(--muted)}
+.qhead{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);font-weight:600}
+.tbar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:8px 0 16px}
+.tbar div{height:100%;background:var(--teal);width:100%}
+.qtext{font-size:17px;line-height:1.5;margin-bottom:6px;font-weight:500}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:#fff;color:var(--text);border:1px solid var(--line);margin-top:10px;padding:14px;font-weight:400;line-height:1.4}
+.opt .k{flex:0 0 26px;height:26px;border-radius:50%;background:var(--bg);color:var(--navy);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px}
+.opt:hover{border-color:var(--teal)}
+.opt.sel{border-color:var(--teal);background:#e8f6f4}
+.spinner{width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--navy);border-radius:50%;animation:spin 1s linear infinite;margin:20px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.progress{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:12px 0}
+.progress div{height:100%;background:var(--green);width:0;transition:width .3s}
+.center{text-align:center}
+.note{font-size:12px;color:var(--muted)}
+.big{font-size:44px;line-height:1;margin:6px 0}
+</style>
+</head>
+<body class="noselect">
+<div id="testBanner" class="testbanner hidden">TEST MODE &mdash; this attempt is not recorded as a real assessment</div>
+<header><h1>GPS HSE Competency Assessment</h1></header>
+<div class="bar-grad"></div>
+<main>
+
+  <!-- 1. Login -->
+  <section id="sLogin" class="card">
+    <h2>Welcome</h2>
+    <p>Enter your Employee ID and the access code from your invitation email.</p>
+    <label for="empId">Employee ID</label>
+    <input type="text" id="empId" inputmode="text" autocomplete="off">
+    <label for="code">Access code</label>
+    <input type="text" id="code" maxlength="8" autocomplete="off">
+    <div class="err" id="loginErr"></div>
+    <button id="btnLogin">Continue</button>
+  </section>
+
+  <!-- 2. Consent -->
+  <section id="sConsent" class="card hidden">
+    <h2 id="hello">Hello</h2>
+    <p>Before you continue, please read and accept how this assessment is monitored.</p>
+    <ul>
+      <li>Your <b>camera and microphone</b> are used during the assessment.</li>
+      <li><b>Short video clips and snapshots</b> are recorded and stored in the GPS Google Drive for verification of identity and integrity.</li>
+      <li>Leaving the page, switching apps and sustained voices or noise are recorded.</li>
+      <li>Video is deleted after verification; snapshots and results are kept as part of your competency record.</li>
+    </ul>
+    <div class="chk"><input type="checkbox" id="consent"><span>I am <b id="consentName"></b>, I am taking this assessment myself without help, and I agree to the monitoring and recording described above.</span></div>
+    <button id="btnConsent" disabled>Agree and check my camera</button>
+  </section>
+
+  <!-- 3. Device check -->
+  <section id="sDevice" class="card hidden">
+    <h2>Camera &amp; microphone check</h2>
+    <div id="camWrap"></div>
+    <div class="status" id="camStatus">Requesting camera&hellip;</div>
+    <label>Microphone (say a few words)</label>
+    <div class="meter"><div id="micLevel"></div></div>
+    <div class="status" id="micStatus">Waiting for sound&hellip;</div>
+    <div class="err" id="deviceErr"></div>
+    <button id="btnDeviceOk" disabled>Continue</button>
+    <button id="btnRetryCam" class="secondary hidden">Try again</button>
+  </section>
+
+  <!-- 4. Instructions -->
+  <section id="sRules" class="card hidden">
+    <h2>Before you start</h2>
+    <div class="facts">
+      <div class="fact"><b id="fQ">20</b><span>questions</span></div>
+      <div class="fact"><b>20&ndash;60 s</b><span>per question</span></div>
+    </div>
+    <ul>
+      <li>Each question has its <b>own timer</b>. When time runs out, it moves on automatically and counts as unanswered.</li>
+      <li>Tap an answer to submit it. <b>You cannot go back</b> or change an answer.</li>
+      <li>Stay on this page. Do not switch apps, open other tabs or take calls.</li>
+      <li>Keep your face visible to the camera in good light.</li>
+      <li id="resumeNote" class="hidden"><b>You are resuming</b> an assessment already in progress. A question left open when the page closed counts as unanswered.</li>
+    </ul>
+    <div class="err" id="startErr"></div>
+    <button id="btnStart">Start the assessment</button>
+  </section>
+
+  <!-- 5. Question -->
+  <section id="sQuiz" class="card hidden">
+    <div class="qhead"><span id="qNum"></span><span id="qTime"></span></div>
+    <div class="tbar"><div id="qBar"></div></div>
+    <div class="qtext" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="err" id="quizErr"></div>
+  </section>
+
+  <!-- Loading -->
+  <section id="sLoading" class="card hidden center">
+    <div class="spinner"></div>
+    <p id="loadingText">Loading&hellip;</p>
+  </section>
+
+  <!-- 6. Finish -->
+  <section id="sDone" class="card hidden center">
+    <div class="big" id="doneIcon">&#9203;</div>
+    <h2 id="doneTitle">Submitting&hellip;</h2>
+    <p id="doneText">Please keep this page open while your recordings finish uploading.</p>
+    <div class="progress" id="upProg"><div></div></div>
+    <p class="note" id="upText"></p>
+  </section>
+
+  <video id="cam" autoplay playsinline muted class="hidden"></video>
+</main>
+
+<script>
+/* ===== Settings ===== */
+const ENDPOINT = 'https://script.google.com/macros/s/AKfycbxvddSzFabiMR-6gfXsxmkGDWsbXwxRPuXnFJKFwYLuNt1YKgY3OoLDLfOz4i20o1Jmbw/exec';
+
+/* ===== State ===== */
+const S = {
+  empId: '', code: '', info: null, token: '', page: {}, stream: null, audioCtx: null, mime: '', ext: 'webm',
+  recorder: null, uploads: [], upDone: 0, upFail: 0, inQuiz: false, q: null, deadline: 0, tick: null,
+  snapT: null, busy: false, micLoudSince: 0, micFlagged: false
+};
+const $ = id => document.getElementById(id);
+const screens = ['sLogin', 'sConsent', 'sDevice', 'sRules', 'sQuiz', 'sLoading', 'sDone'];
+function show(id) { screens.forEach(s => $(s).classList.toggle('hidden', s !== id)); window.scrollTo(0, 0); }
+function loading(text) { $('loadingText').textContent = text || 'Loading…'; show('sLoading'); }
+
+/* ===== Server ===== */
+async function api(action, data, tries) {
+  tries = tries || 2;
+  const body = JSON.stringify(Object.assign({ action: action }, data || {}));
+  let lastErr;
+  for (let i = 0; i < tries; i++) {
+    try {
+      const r = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: body });
+      const t = await r.text();
+      let j;
+      try { j = JSON.parse(t); } catch (e) { throw new Error('Server reply was not readable (HTTP ' + r.status + ').'); }
+      if (!j.ok) { const e = new Error(j.error); e.server = true; throw e; }
+      return j.result;
+    } catch (e) {
+      lastErr = e;
+      if (e.server) throw e;
+      await new Promise(r => setTimeout(r, 1200));
+    }
+  }
+  throw new Error((lastErr && lastErr.message) || 'Connection problem. Check your internet and try again.');
+}
+
+/* ===== 1. Login ===== */
+(function prefill() {
+  const u = new URLSearchParams(location.search);
+  if (u.get('id')) $('empId').value = u.get('id');
+  if (u.get('code')) $('code').value = u.get('code');
+})();
+$('btnLogin').addEventListener('click', async () => {
+  $('loginErr').textContent = '';
+  S.empId = $('empId').value.trim();
+  S.code = $('code').value.trim().toUpperCase();
+  if (!S.empId || !S.code) { $('loginErr').textContent = 'Enter both your Employee ID and access code.'; return; }
+  $('btnLogin').disabled = true;
+  try {
+    S.info = await api('check', { empId: S.empId, code: S.code });
+    S.page = S.info.page || {};
+    if (S.info.isTest || S.info.testMode) $('testBanner').classList.remove('hidden');
+    $('hello').textContent = 'Hello ' + S.info.name;
+    $('consentName').textContent = S.info.name;
+    $('fQ').textContent = S.info.total;
+    $('resumeNote').classList.toggle('hidden', !S.info.resume);
+    show('sConsent');
+  } catch (e) {
+    $('loginErr').textContent = e.message;
+  } finally {
+    $('btnLogin').disabled = false;
+  }
+});
+
+/* ===== 2. Consent ===== */
+$('consent').addEventListener('change', () => { $('btnConsent').disabled = !$('consent').checked; });
+$('btnConsent').addEventListener('click', () => {
+  // iPhone: audio monitoring must start directly from a tap
+  try { const C = window.AudioContext || window.webkitAudioContext; if (C) { S.audioCtx = new C(); S.audioCtx.resume(); } } catch (e) {}
+  startDevice();
+});
+
+/* ===== 3. Device check ===== */
+async function startDevice() {
+  show('sDevice');
+  $('deviceErr').textContent = '';
+  $('btnRetryCam').classList.add('hidden');
+  const cam = $('cam');
+  $('camWrap').appendChild(cam);
+  const needCam = S.page.cameraRequired !== false;
+  try {
+    S.stream = await navigator.mediaDevices.getUserMedia({
+      video: { width: { ideal: 320 }, height: { ideal: 240 }, facingMode: 'user' }, audio: true
+    });
+    cam.srcObject = S.stream;
+    cam.classList.remove('hidden');
+    const live = S.stream.getVideoTracks().some(t => t.readyState === 'live');
+    setStatus('camStatus', live ? 'ok' : 'bad', live ? 'Camera working ✓' : 'Camera not delivering video');
+    S.mime = pickMime();
+    S.ext = S.mime.indexOf('mp4') > -1 ? 'mp4' : 'webm';
+    S.stream.getVideoTracks().forEach(t => t.addEventListener('ended', () => { if (S.inQuiz) logEvent('Camera lost', 'Camera track ended'); }));
+    startMic();
+    $('btnDeviceOk').disabled = needCam && !live;
+  } catch (err) {
+    const name = err && err.name ? err.name : '';
+    setStatus('camStatus', 'bad', 'Camera/microphone blocked ✗');
+    setStatus('micStatus', 'bad', 'Not available');
+    $('deviceErr').innerHTML = name === 'NotAllowedError'
+      ? 'Permission was refused. Allow camera and microphone for this site in your browser settings, then tap <b>Try again</b>.'
+      : 'Camera could not start (' + (name || 'error') + '). Close other apps using the camera and tap <b>Try again</b>.';
+    $('btnRetryCam').classList.remove('hidden');
+    $('btnDeviceOk').disabled = needCam;
+  }
+}
+$('btnRetryCam').addEventListener('click', () => {
+  try { const C = window.AudioContext || window.webkitAudioContext; if (C && !S.audioCtx) { S.audioCtx = new C(); S.audioCtx.resume(); } } catch (e) {}
+  startDevice();
+});
+$('btnDeviceOk').addEventListener('click', () => show('sRules'));
+
+function pickMime() {
+  if (!window.MediaRecorder) return '';
+  const list = ['video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4'];
+  for (const m of list) { try { if (MediaRecorder.isTypeSupported(m)) return m; } catch (e) {} }
+  return '';
+}
+
+function startMic() {
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  if (!Ctx || !S.stream.getAudioTracks().length) { setStatus('micStatus', 'bad', 'No microphone'); return; }
+  const ctx = S.audioCtx || new Ctx();
+  S.audioCtx = ctx;
+  if (ctx.state === 'suspended') ctx.resume();
+  const an = ctx.createAnalyser();
+  an.fftSize = 1024;
+  ctx.createMediaStreamSource(S.stream).connect(an);
+  const buf = new Uint8Array(an.fftSize);
+  let micOk = false;
+  const level = Number(S.page.micLevel) || 0.08;
+  const holdMs = Number(S.page.micMs) || 1500;
+  (function tick() {
+    an.getByteTimeDomainData(buf);
+    let sum = 0;
+    for (let i = 0; i < buf.length; i++) { const x = (buf[i] - 128) / 128; sum += x * x; }
+    const rms = Math.sqrt(sum / buf.length);
+    $('micLevel').style.width = Math.min(100, rms * 400) + '%';
+    if (!micOk && rms > 0.02) { micOk = true; setStatus('micStatus', 'ok', 'Microphone working ✓'); }
+    if (S.inQuiz && S.page.mic !== false) {
+      if (rms > level) {
+        if (!S.micLoudSince) S.micLoudSince = performance.now();
+        if (!S.micFlagged && performance.now() - S.micLoudSince > holdMs) {
+          S.micFlagged = true;
+          logEvent('Mic noise', 'Sustained voice/noise detected');
+        }
+      } else { S.micLoudSince = 0; S.micFlagged = false; }
+    }
+    requestAnimationFrame(tick);
+  })();
+}
+
+/* ===== 4. Start ===== */
+$('btnStart').addEventListener('click', async () => {
+  $('startErr').textContent = '';
+  $('btnStart').disabled = true;
+  if (S.page.fullscreen !== false && document.documentElement.requestFullscreen) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  }
+  loading('Preparing your questions…');
+  try {
+    const r = await api('start', { empId: S.empId, code: S.code, consent: true, device: deviceText() }, 1);
+    S.token = r.token;
+    S.page = r.page || S.page;
+    if (r.isTest || r.testMode) $('testBanner').classList.remove('hidden');
+    S.inQuiz = true;
+    if (S.stream) { const cam = $('cam'); document.body.appendChild(cam); cam.classList.add('pip'); }
+    snapshot('Start');
+    const q = await api('question', { token: S.token });
+    if (q.done) return finish();
+    showQuestion(q);
+  } catch (e) {
+    show('sRules');
+    $('startErr').textContent = e.message;
+  } finally {
+    $('btnStart').disabled = false;
+  }
+});
+
+function deviceText() {
+  const ua = navigator.userAgent;
+  const d = /iPhone|iPad/.test(ua) ? 'iPhone/iPad' : /Android/.test(ua) ? 'Android' : /Windows/.test(ua) ? 'Windows PC' : /Mac/.test(ua) ? 'Mac' : 'Other';
+  return d + ' | ' + ua;
+}
+
+/* ===== Integrity ===== */
+document.addEventListener('visibilitychange', () => {
+  if (S.inQuiz && document.hidden && S.page.tabDetect !== false) logEvent('Tab switch', 'Left the assessment page');
+});
+document.addEventListener('fullscreenchange', () => {
+  if (S.inQuiz && !document.fullscreenElement && S.page.fullscreen !== false) logEvent('Fullscreen exit', 'Exited fullscreen');
+});
+document.addEventListener('contextmenu', e => { if (S.inQuiz) e.preventDefault(); });
+['copy', 'cut', 'paste'].forEach(ev => document.addEventListener(ev, e => { if (S.inQuiz) e.preventDefault(); }));
+window.addEventListener('beforeunload', e => { if (S.inQuiz) { e.preventDefault(); e.returnValue = ''; } });
+
+function logEvent(type, detail) {
+  if (!S.token) return;
+  api('event', { token: S.token, type: type, detail: detail, seq: S.q ? S.q.seq : '' }).catch(() => {});
+}
+
+/* ===== 5. Questions ===== */
+function showQuestion(q) {
+  S.q = q;
+  S.busy = false;
+  show('sQuiz');
+  $('quizErr').textContent = '';
+  $('qNum').textContent = 'Question ' + q.seq + ' of ' + q.total;
+  $('qText').textContent = q.text;
+  const box = $('qOpts');
+  box.innerHTML = '';
+  q.options.forEach((o, i) => {
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.innerHTML = '<span class="k">' + 'ABCD'.charAt(i) + '</span><span></span>';
+    b.lastChild.textContent = o.text;
+    b.addEventListener('click', () => answer(o.key, b));
+    box.appendChild(b);
+  });
+  S.deadline = Date.now() + Number(q.remaining) * 1000;
+  S.limit = Number(q.limit);
+  startClip(q.seq);
+  clearTimeout(S.snapT);
+  if (S.page.snapshots !== false) {
+    const at = 2500 + Math.random() * Math.max(1000, (Number(q.remaining) - 5) * 1000);
+    const label = 'Q' + q.seq;
+    S.snapT = setTimeout(() => snapshot(label), at);
+  }
+  clearInterval(S.tick);
+  updateTimer();
+  S.tick = setInterval(updateTimer, 200);
+}
+
+function updateTimer() {
+  const left = Math.max(0, (S.deadline - Date.now()) / 1000);
+  $('qTime').textContent = Math.ceil(left) + ' s left';
+  $('qBar').style.width = Math.min(100, left / S.limit * 100) + '%';
+  $('qBar').style.background = left < 5 ? 'var(--red)' : 'var(--teal)';
+  if (left <= 0) answer(null, null);
+}
+
+async function answer(key, btn) {
+  if (S.busy) return;
+  S.busy = true;
+  clearInterval(S.tick);
+  clearTimeout(S.snapT);
+  if (btn) btn.classList.add('sel');
+  Array.prototype.forEach.call(document.querySelectorAll('.opt'), b => { b.disabled = true; });
+  stopClip();
+  const seq = S.q.seq;
+  try {
+    const r = await api('next', { token: S.token, seq: seq, answer: key }, 3);
+    if (r.next.done) return finish();
+    showQuestion(r.next);
+  } catch (e) {
+    $('quizErr').textContent = e.message + ' Retrying…';
+    setTimeout(async () => {
+      try {
+        const q = await api('question', { token: S.token }, 3);
+        if (q.done) return finish();
+        showQuestion(q);
+      } catch (e2) {
+        $('quizErr').textContent = 'Connection lost. Check your internet; your answers so far are saved. Re-open the link and enter your code to continue.';
+      }
+    }, 1500);
+  }
+}
+
+/* ===== Recording ===== */
+function startClip(seq) {
+  if (!S.stream || S.page.video === false || !window.MediaRecorder) return;
+  const chunks = [];
+  let rec;
+  try {
+    rec = new MediaRecorder(S.stream, S.mime ? { mimeType: S.mime, videoBitsPerSecond: 250000, audioBitsPerSecond: 32000 } : {});
+  } catch (e) { return; }
+  rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+  rec.onstop = () => {
+    const blob = new Blob(chunks, { type: (rec.mimeType || S.mime || 'video/webm').split(';')[0] });
+    upload(blob, 'Q' + String(seq).padStart(2, '0') + '_video.' + S.ext);
+  };
+  rec.start(1000);
+  S.recorder = rec;
+}
+
+function stopClip() {
+  if (S.recorder && S.recorder.state !== 'inactive') { try { S.recorder.stop(); } catch (e) {} }
+  S.recorder = null;
+}
+
+function snapshot(label) {
+  if (!S.stream || S.page.snapshots === false) return;
+  const v = $('cam');
+  if (!v.videoWidth) return;
+  const c = document.createElement('canvas');
+  c.width = v.videoWidth;
+  c.height = v.videoHeight;
+  c.getContext('2d').drawImage(v, 0, 0);
+  c.toBlob(b => { if (b) upload(b, label + '_snapshot.jpg'); }, 'image/jpeg', 0.6);
+}
+
+function upload(blob, name) {
+  const p = new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result).split(',')[1] || '');
+    r.onerror = () => reject(r.error);
+    r.readAsDataURL(blob);
+  }).then(b64 => api('file', { token: S.token, fileName: name, mimeType: blob.type || 'video/webm', base64: b64 }, 3))
+    .then(() => { S.upDone++; updateUploadUi(); })
+    .catch(() => { S.upFail++; updateUploadUi(); });
+  S.uploads.push(p);
+}
+
+function updateUploadUi() {
+  const total = S.uploads.length || 1;
+  const done = S.upDone + S.upFail;
+  $('upProg').firstElementChild.style.width = Math.round(done / total * 100) + '%';
+  $('upText').textContent = 'Recordings uploaded: ' + S.upDone + ' of ' + S.uploads.length + (S.upFail ? ' (' + S.upFail + ' failed)' : '');
+}
+
+/* ===== 6. Finish ===== */
+async function finish() {
+  S.inQuiz = false;
+  clearInterval(S.tick);
+  clearTimeout(S.snapT);
+  stopClip();
+  show('sDone');
+  $('cam').classList.add('hidden');
+  if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+  await new Promise(r => setTimeout(r, 1200));
+  updateUploadUi();
+  await Promise.allSettled(S.uploads);
+  if (S.stream) S.stream.getTracks().forEach(t => t.stop());
+  try {
+    const r = await api('finish', { token: S.token }, 3);
+    $('doneIcon').innerHTML = '&#9989;';
+    $('doneTitle').textContent = 'Assessment submitted';
+    let txt = 'Thank you. Your assessment is now under verification. Your result will be emailed to you once the review is complete.';
+    if (r.score !== undefined) txt = 'Your score: ' + r.score + '% (' + r.result + '). ' + txt;
+    $('doneText').textContent = txt;
+    if (S.upFail) $('upText').textContent += ' — some recordings could not be uploaded; the reviewer will be informed.';
+  } catch (e) {
+    $('doneIcon').innerHTML = '&#9888;&#65039;';
+    $('doneTitle').textContent = 'Could not submit yet';
+    $('doneText').textContent = 'Your answers are saved. Please check your internet and re-open the link with your code, or contact HSE. (' + e.message + ')';
+  }
+}
+
+function setStatus(id, cls, text) { const el = $(id); el.className = 'status ' + cls; el.textContent = text; }
+</script>
+</body>
+</html>
