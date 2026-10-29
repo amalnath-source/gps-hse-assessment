@@ -4,19 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>GPS HSE Competency Assessment</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--navy:#6E4BD8;--teal:#6E4BD8;--bg:#FAF2F1;--card:#fff;--text:#1E1A22;--muted:#6F6573;--red:#B5573A;--amber:#C8714E;--green:#3E8E6A;--line:#EBDCDC;--soft:#F3ECFB;--terra:#FBEDE7;--terraink:#9C4528}
+:root{--navy:#6E4BD8;--teal:#3E8E6A;--bg:#FAF2F1;--card:#fff;--text:#2A211D;--muted:#7A6A64;--red:#B5573A;--amber:#C8714E;--green:#3E8E6A;--line:#EADBD3;--soft:#F1ECFA;--terra:#FBEDE7;--terraink:#9C4528;--brown:#6B4A3A;--cream:#FFF7F0;--sand:#F3E9DF;--sandink:#5A3E30}
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
 body.noselect{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-header{background:#fff;color:var(--text);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
-header h1{font-size:16px;margin:0;font-weight:800;letter-spacing:-.2px}
-.bar-grad{height:4px;background:linear-gradient(90deg,#6E4BD8,#9C7BEA,#C8714E)}
+header{background:var(--brown);color:var(--cream);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+header h1{font:600 17px Poppins,Arial,sans-serif;margin:0;letter-spacing:.2px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.bar-grad{height:4px;background:linear-gradient(90deg,#C8714E,#E3B48F,#F3E9DF)}
 .testbanner{background:var(--soft);color:#4B2F9E;text-align:center;font-size:12px;font-weight:700;padding:6px;letter-spacing:.5px}
 .practicebanner{background:var(--terra);color:var(--terraink);text-align:center;font-size:12px;font-weight:700;padding:7px;letter-spacing:.5px}
 main{max-width:680px;margin:0 auto;padding:16px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
-h2{font-size:18px;margin:0 0 12px}
+h2{font:600 18px Poppins,Arial,sans-serif;margin:0 0 12px;color:var(--brown)}
 p,li{font-size:14px;line-height:1.55}
 ul{padding-left:20px;margin:8px 0}
 label{display:block;font-size:13px;color:var(--muted);margin:12px 0 4px}
@@ -25,7 +26,7 @@ input[type=text]{width:100%;padding:12px;border:1px solid var(--line);border-rad
 .chk{display:flex;gap:10px;align-items:flex-start;font-size:13px;margin-top:14px;line-height:1.5}
 .chk input{margin-top:3px;width:18px;height:18px;flex:0 0 auto}
 button{background:var(--navy);color:#fff;border:0;border-radius:10px;padding:14px 16px;font-size:15px;font-weight:600;cursor:pointer;width:100%;margin-top:14px}
-button.secondary{background:#fff;color:var(--navy);border:1px solid var(--navy)}
+button.secondary{background:#fff;color:var(--brown);border:1px solid var(--brown)}
 button:disabled{opacity:.45;cursor:not-allowed}
 .hidden{display:none!important}
 .err{color:var(--red);font-size:13px;margin-top:10px;min-height:1em}
@@ -36,15 +37,15 @@ video#cam.pip{position:fixed;right:10px;bottom:10px;width:96px;border:2px solid 
 .meter{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:6px}
 .meter div{height:100%;width:0;background:var(--green);transition:width .1s}
 .facts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
-.fact{background:var(--bg);border-radius:8px;padding:10px}
-.fact b{display:block;font-size:18px;color:var(--navy)}
+.fact{background:var(--sand);border-radius:8px;padding:10px}
+.fact b{display:block;font:600 18px Poppins,Arial,sans-serif;color:var(--brown)}
 .fact span{font-size:12px;color:var(--muted)}
 .qhead{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);font-weight:600}
 .tbar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:8px 0 16px}
 .tbar div{height:100%;background:var(--teal);width:100%}
 .qtext{font-size:17px;line-height:1.5;margin-bottom:6px;font-weight:500}
 .opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:#fff;color:var(--text);border:1px solid var(--line);margin-top:10px;padding:14px;font-weight:400;line-height:1.4}
-.opt .k{flex:0 0 26px;height:26px;border-radius:50%;background:var(--bg);color:var(--navy);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px}
+.opt .k{flex:0 0 26px;height:26px;border-radius:50%;background:var(--sand);color:var(--brown);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px}
 .opt:hover{border-color:var(--teal)}
 .opt.sel{border-color:var(--navy);background:var(--soft)}
 .spinner{width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--navy);border-radius:50%;animation:spin 1s linear infinite;margin:20px auto}
@@ -59,10 +60,19 @@ video#cam.pip{position:fixed;right:10px;bottom:10px;width:96px;border:2px solid 
 </head>
 <body class="noselect">
 <div id="practiceBanner" class="practicebanner hidden">PRACTICE ASSESSMENT &mdash; to learn the system; the result does not count</div>
-<div id="testBanner" class="testbanner hidden">TEST MODE &mdash; this attempt is not recorded as a real assessment</div>
+<div id="testBanner" class="testbanner hidden">TEST ATTEMPT &mdash; not counted in statistics</div>
 <header><h1>GPS HSE Competency Assessment</h1></header>
 <div class="bar-grad"></div>
 <main>
+
+  <!-- 0. Request another practice (link in the practice result email) -->
+  <section id="sRetry" class="card hidden">
+    <h2>Request another practice</h2>
+    <p id="retryText">Click the button below to get a new practice assessment code. It is emailed to you straight away, and you can start it right here.</p>
+    <div class="err" id="retryErr"></div>
+    <button id="btnRetry">Send me a new practice code</button>
+    <button id="btnRetryStart" class="hidden">Start the practice now</button>
+  </section>
 
   <!-- 1. Login -->
   <section id="sLogin" class="card">
@@ -167,7 +177,7 @@ const S = {
   away: null, awayT: null, camMon: null, darkN: 0, frozenN: 0, prevFrame: null, statCanvas: null, clipStart: 0, clipSeq: ''
 };
 const $ = id => document.getElementById(id);
-const screens = ['sLogin', 'sConsent', 'sDevice', 'sRules', 'sQuiz', 'sLoading', 'sDone'];
+const screens = ['sRetry', 'sLogin', 'sConsent', 'sDevice', 'sRules', 'sQuiz', 'sLoading', 'sDone'];
 function show(id) { screens.forEach(s => $(s).classList.toggle('hidden', s !== id)); window.scrollTo(0, 0); }
 function loading(text) { $('loadingText').textContent = text || 'Loading…'; show('sLoading'); }
 
@@ -198,7 +208,34 @@ async function api(action, data, tries) {
   const u = new URLSearchParams(location.search);
   if (u.get('id')) $('empId').value = u.get('id');
   if (u.get('code')) $('code').value = u.get('code');
+  if (u.get('retry')) { $('practiceBanner').classList.remove('hidden'); show('sRetry'); }
 })();
+/* ===== 0. Request another practice ===== */
+$('btnRetry').addEventListener('click', async () => {
+  const token = new URLSearchParams(location.search).get('retry') || '';
+  $('retryErr').textContent = '';
+  $('btnRetry').disabled = true;
+  $('btnRetry').textContent = 'Please wait…';
+  try {
+    const r = await api('trialRetry', { token: token }, 1);
+    $('btnRetry').classList.add('hidden');
+    if (r.code) {
+      $('retryText').innerHTML = (r.name ? 'Hello ' + r.name.replace(/[<>&]/g, '') + '. ' : '') + r.message +
+        '<br><br>ID: <b>' + String(r.empId).replace(/[<>&]/g, '') + '</b> &middot; Code: <b style="letter-spacing:2px">' + String(r.code).replace(/[<>&]/g, '') + '</b>' +
+        (r.expiry ? '<br><span class="note">Valid until ' + String(r.expiry).replace(/[<>&]/g, '') + '</span>' : '') +
+        (r.left !== undefined ? '<br><span class="note">Practice attempts left after this one: ' + Math.max(0, r.left) + '</span>' : '');
+      $('empId').value = r.empId; $('code').value = r.code;
+      $('btnRetryStart').classList.remove('hidden');
+    } else {
+      $('retryText').textContent = r.message;
+    }
+  } catch (e) {
+    $('retryErr').textContent = e.message;
+    $('btnRetry').disabled = false;
+    $('btnRetry').textContent = 'Send me a new practice code';
+  }
+});
+$('btnRetryStart').addEventListener('click', () => { history.replaceState(null, '', location.pathname); show('sLogin'); $('btnLogin').click(); });
 $('btnLogin').addEventListener('click', async () => {
   $('loginErr').textContent = '';
   S.empId = $('empId').value.trim();
@@ -208,7 +245,7 @@ $('btnLogin').addEventListener('click', async () => {
   try {
     S.info = await api('check', { empId: S.empId, code: S.code });
     S.page = S.info.page || {};
-    if (S.info.isTest || S.info.testMode) $('testBanner').classList.remove('hidden');
+    if (S.info.isTest) $('testBanner').classList.remove('hidden');
     if (S.info.trial) { $('practiceBanner').classList.remove('hidden'); document.title = 'Practice - GPS HSE Competency Assessment'; }
     $('hello').textContent = 'Hello ' + S.info.name;
     $('consentName').textContent = S.info.name;
@@ -451,7 +488,7 @@ $('btnStart').addEventListener('click', async () => {
     const r = await api('start', { empId: S.empId, code: S.code, consent: true, device: deviceText() }, 1);
     S.token = r.token;
     S.page = r.page || S.page;
-    if (r.isTest || r.testMode) $('testBanner').classList.remove('hidden');
+    if (r.isTest) $('testBanner').classList.remove('hidden');
     if (r.trial) $('practiceBanner').classList.remove('hidden');
     S.inQuiz = true;
     (S.pending || []).forEach(x => logEvent(x[0], x[1], ''));
