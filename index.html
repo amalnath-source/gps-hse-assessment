@@ -74,6 +74,32 @@ video#cam.pip{position:fixed;right:10px;bottom:10px;width:96px;border:2px solid 
     <button id="btnRetryStart" class="hidden">Start the practice now</button>
   </section>
 
+  <!-- Proctoring self-test (link from Admin › Proctoring Test) -->
+  <section id="sSelf" class="card hidden">
+    <h2>Proctoring self-test</h2>
+    <p class="note">For the HSE admin: checks what the assessment monitoring detects on this device. No assessment is recorded and no questions are used.</p>
+    <div id="stIntro">
+      <p>Tap <b>Start</b>, allow the camera and microphone, and <b>stay quiet for 5 seconds</b> while the room level is measured. Then work through the list below; each check turns green when it is detected.</p>
+      <div class="err" id="stErr"></div>
+      <button id="btnStStart">Start</button>
+    </div>
+    <div id="stLive" class="hidden">
+      <div id="stCamWrap" style="margin:8px 0"></div>
+      <div class="facts">
+        <div class="fact"><b id="stMicNow">–</b><span>Microphone level now</span></div>
+        <div class="fact"><b id="stMicThr">–</b><span>Flag level (room <span id="stMicBase">–</span>)</span></div>
+        <div class="fact"><b id="stFaces">–</b><span>Faces in camera</span></div>
+        <div class="fact"><b id="stYaw">–</b><span>Head turn (flag above <span id="stYawMax">0.6</span>)</span></div>
+      </div>
+      <div class="meter" style="position:relative;height:14px"><div id="stMicBar"></div><span id="stThrMark" style="position:absolute;top:-3px;bottom:-3px;width:2px;background:#9C4528;left:0"></span></div>
+      <p class="note" id="stNoteTxt">Measuring the room level - please stay quiet…</p>
+      <table style="width:100%;border-collapse:collapse;margin-top:8px" id="stTable"></table>
+      <button class="secondary" id="btnStFull">Enter fullscreen (PC)</button>
+      <button id="btnStSave">Save results</button>
+      <div class="note" id="stSaved"></div>
+    </div>
+  </section>
+
   <!-- 1. Login -->
   <section id="sLogin" class="card">
     <h2>Welcome</h2>
@@ -174,10 +200,12 @@ const S = {
   recorder: null, uploads: [], upDone: 0, upFail: 0, inQuiz: false, q: null, deadline: 0, tick: null,
   snapT: null, busy: false, micLoudSince: 0, micFlagged: false,
   micGen: 0, devGen: 0, micMax: 0, micTicks: 0, pending: [], events: [], evCount: {}, flagSnaps: 0,
-  away: null, awayT: null, camMon: null, darkN: 0, frozenN: 0, prevFrame: null, statCanvas: null, clipStart: 0, clipSeq: ''
+  away: null, awayT: null, camMon: null, darkN: 0, frozenN: 0, prevFrame: null, statCanvas: null, clipStart: 0, clipSeq: '',
+  micHist: [], micHistT: 0, micBase: 0, micThr: 0, fd: null, fdLoad: null, fdBusy: false, faceT: null, face: null, faceN: -1, yaw: 0, selftest: false, stToken: ''
 };
+const FD_BASE = 'https://cdn.jsdelivr.net/npm/@mediapipe/face_detection@0.4.1646425229/';
 const $ = id => document.getElementById(id);
-const screens = ['sRetry', 'sLogin', 'sConsent', 'sDevice', 'sRules', 'sQuiz', 'sLoading', 'sDone'];
+const screens = ['sSelf', 'sRetry', 'sLogin', 'sConsent', 'sDevice', 'sRules', 'sQuiz', 'sLoading', 'sDone'];
 function show(id) { screens.forEach(s => $(s).classList.toggle('hidden', s !== id)); window.scrollTo(0, 0); }
 function loading(text) { $('loadingText').textContent = text || 'Loading…'; show('sLoading'); }
 
@@ -209,6 +237,7 @@ async function api(action, data, tries) {
   if (u.get('id')) $('empId').value = u.get('id');
   if (u.get('code')) $('code').value = u.get('code');
   if (u.get('retry')) { $('practiceBanner').classList.remove('hidden'); show('sRetry'); }
+  if (u.get('selftest')) { S.stToken = u.get('selftest'); $('testBanner').textContent = 'PROCTORING SELF-TEST - nothing is recorded as an assessment'; $('testBanner').classList.remove('hidden'); show('sSelf'); }
 })();
 /* ===== 0. Request another practice ===== */
 $('btnRetry').addEventListener('click', async () => {
@@ -335,6 +364,7 @@ async function startDevice() {
     vt.forEach(t => t.addEventListener('ended', () => { if (S.inQuiz) flagEvent('Camera lost', 'Camera stopped during the test', { noSnap: true }); }));
     DEV.cam = 'checking';
     checkCameraPicture();
+    if (S.page.faceCheck !== false) loadFaceLib();
   } else {
     cam.classList.add('hidden');
     DEV.cam = 'bad'; DEV.camWhy = errWhy(g.camErr);
@@ -449,7 +479,6 @@ function startMic() {
   const buf = new Uint8Array(an.fftSize);
   const gen = ++S.micGen;
   DEV.mic = 'listening';
-  const level = Number(S.page.micLevel) || 0.08;
   const holdMs = Number(S.page.micMs) || 1500;
   (function tick() {
     if (gen !== S.micGen) return;
@@ -457,23 +486,103 @@ function startMic() {
     let sum = 0;
     for (let i = 0; i < buf.length; i++) { const x = (buf[i] - 128) / 128; sum += x * x; }
     const rms = Math.sqrt(sum / buf.length);
-    if (!S.inQuiz) $('micLevel').style.width = Math.min(100, rms * 400) + '%';
+    if (!S.inQuiz) {
+      $('micLevel').style.width = Math.min(100, rms * 400) + '%';
+      if (performance.now() - S.micHistT > 200) { S.micHistT = performance.now(); S.micHist.push(rms); if (S.micHist.length > 150) S.micHist.shift(); }
+    }
+    if (S.selftest) stMic(rms);
     if (DEV.mic === 'listening' && rms > 0.02) { DEV.mic = 'ok'; deviceVerdict(); }
     if (S.inQuiz) {
       S.micTicks++;
       if (rms > S.micMax) S.micMax = rms;
       if (S.page.mic !== false) {
+        const level = S.micThr || Number(S.page.micLevel) || 0.08;
         if (rms > level) {
-          if (!S.micLoudSince) S.micLoudSince = performance.now();
+          if (!S.micLoudSince) { S.micLoudSince = performance.now(); S.micPeak = 0; }
+          if (rms > S.micPeak) S.micPeak = rms;
           if (!S.micFlagged && performance.now() - S.micLoudSince > holdMs) {
             S.micFlagged = true;
-            flagEvent('Mic noise', 'Sustained voice/noise detected', { at: S.micLoudSince });
+            flagEvent('Mic noise', 'Voice/noise level ' + S.micPeak.toFixed(3) + ' (flag level ' + level.toFixed(3) + ', room ' + S.micBase.toFixed(3) + ')', { at: S.micLoudSince });
           }
         } else { S.micLoudSince = 0; S.micFlagged = false; }
       }
     }
     requestAnimationFrame(tick);
   })();
+}
+
+/** Flag level for voice/noise: room level x MIC_NOISE_FACTOR, kept between MIC_MIN_LEVEL and MIC_FLAG_LEVEL. */
+function micCalibrate() {
+  const max = Number(S.page.micLevel) || 0.08, min = Number(S.page.micMin) || 0.015, f = Number(S.page.micFactor) || 3;
+  const h = S.micHist.slice().sort((a, b) => a - b);
+  S.micBase = h.length ? h[Math.floor(h.length * 0.2)] : 0;
+  S.micThr = S.page.micAdaptive === false ? max : Math.min(max, Math.max(min, S.micBase * f));
+  return { base: S.micBase, thr: S.micThr };
+}
+
+/* ===== Face check (MediaPipe face detection, runs on the device; nothing is sent anywhere) ===== */
+function loadFaceLib() {
+  if (S.fdLoad) return S.fdLoad;
+  S.fdLoad = new Promise((res, rej) => {
+    if (window.FaceDetection) return res();
+    const sc = document.createElement('script');
+    sc.src = FD_BASE + 'face_detection.js'; sc.crossOrigin = 'anonymous';
+    sc.onload = () => res(); sc.onerror = () => rej(new Error('Face check could not load'));
+    document.head.appendChild(sc);
+  }).then(async () => {
+    const fd = new window.FaceDetection({ locateFile: f => FD_BASE + f });
+    fd.setOptions({ model: 'short', minDetectionConfidence: 0.6 });
+    fd.onResults(faceResults);
+    await fd.initialize();
+    S.fd = fd;
+    return fd;
+  });
+  S.fdLoad.catch(() => {});
+  return S.fdLoad;
+}
+function faceStart() {
+  clearInterval(S.faceT);
+  if (S.page.faceCheck === false || !S.stream || !S.stream.getVideoTracks().length) return;
+  S.face = { none: 0, multi: 0, away: 0, jumps: [], last: null, moveAt: 0 };
+  loadFaceLib().then(() => { S.faceT = setInterval(faceTick, 1000); })
+    .catch(() => { logEvent('Face check unavailable', 'The face check could not load on this device', ''); if (S.selftest) stNote('Face check could not load on this device.'); });
+}
+function faceTick() {
+  if (!S.inQuiz || document.hidden || !S.fd || S.fdBusy) return;
+  const v = $('cam');
+  if (!v || !v.videoWidth) return;
+  S.fdBusy = true;
+  Promise.resolve().then(() => S.fd.send({ image: v })).catch(() => {}).then(() => { S.fdBusy = false; });
+}
+function faceResults(r) {
+  if (!S.inQuiz || !S.face) return;
+  const d = (r && r.detections) || [];
+  const F = S.face, now = performance.now();
+  const noneSec = Number(S.page.faceMissingSec) || 5, awaySec = Number(S.page.lookAwaySec) || 4;
+  S.faceN = d.length;
+  if (!d.length) {
+    F.multi = 0; F.away = 0; F.last = null; F.none++;
+    if (F.none === noneSec) flagEvent('No face', 'No face in the camera for ' + noneSec + ' s', { at: now - noneSec * 1000 });
+    S.yaw = 0;
+    return;
+  }
+  F.none = 0;
+  if (d.length > 1) { F.multi++; if (F.multi === 2) flagEvent('More than one face', d.length + ' faces in the camera', { at: now - 2000 }); }
+  else F.multi = 0;
+  const f = d.slice().sort((a, b) => (b.boundingBox.width * b.boundingBox.height) - (a.boundingBox.width * a.boundingBox.height))[0];
+  const lm = f.landmarks || [];
+  if (lm.length >= 3) {
+    const re = lm[0], le = lm[1], no = lm[2];
+    const eyes = Math.max(Math.abs(le.x - re.x), 0.001);
+    S.yaw = (no.x - (re.x + le.x) / 2) / eyes;
+    if (Math.abs(S.yaw) > (Number(S.page.lookAwayLevel) || 0.6)) { F.away++; if (F.away === awaySec) flagEvent('Looking away', 'Head turned away from the screen for ' + awaySec + ' s', { at: now - awaySec * 1000 }); }
+    else F.away = 0;
+  }
+  const c = { x: f.boundingBox.xCenter, y: f.boundingBox.yCenter };
+  if (F.last && Math.hypot(c.x - F.last.x, c.y - F.last.y) > 0.15) F.jumps.push(now);
+  F.last = c;
+  F.jumps = F.jumps.filter(t => now - t < 10000);
+  if (F.jumps.length >= 3 && now - F.moveAt > 20000) { F.moveAt = now; F.jumps = []; flagEvent('Lots of movement', 'Large movements in front of the camera (3 or more in 10 s)', { at: now - 10000 }); }
 }
 
 /* ===== 4. Start ===== */
@@ -497,6 +606,8 @@ $('btnStart').addEventListener('click', async () => {
     if (S.stream && S.stream.getVideoTracks().length) { const cam = $('cam'); document.body.appendChild(cam); cam.classList.add('pip'); }
     clearInterval(S.camMon);
     if (S.page.darkCheck !== false && S.stream && S.stream.getVideoTracks().length) S.camMon = setInterval(camMonitor, 2000);
+    if (S.stream && S.stream.getAudioTracks().length && S.page.mic !== false) { const m = micCalibrate(); logEvent('Mic calibrated', 'Room level ' + m.base.toFixed(3) + ', voice/noise flagged above ' + m.thr.toFixed(3), ''); }
+    faceStart();
     snapshot('Start');
     const q = await api('question', { token: S.token });
     if (q.done) return finish();
@@ -548,6 +659,7 @@ function clipAt(at, seq) {
 /** Logs an integrity event with the clip time, and takes an evidence snapshot. */
 function flagEvent(type, detail, o) {
   o = o || {};
+  if (S.selftest) return stMark(type, detail);
   if (!S.token) return;
   S.evCount[type] = (S.evCount[type] || 0) + 1;
   if (S.evCount[type] > 10) return;
@@ -561,7 +673,7 @@ function flagEvent(type, detail, o) {
 }
 
 function logEvent(type, detail, seq) {
-  if (!S.token) return;
+  if (S.selftest || !S.token) return;
   const p = api('event', { token: S.token, type: type, detail: detail, seq: seq !== undefined ? seq : (S.q ? S.q.seq : '') }).catch(() => {});
   S.events.push(p);
 }
@@ -606,7 +718,7 @@ document.addEventListener('fullscreenchange', () => {
 });
 document.addEventListener('contextmenu', e => { if (S.inQuiz) e.preventDefault(); });
 ['copy', 'cut', 'paste'].forEach(ev => document.addEventListener(ev, e => { if (S.inQuiz) e.preventDefault(); }));
-window.addEventListener('beforeunload', e => { if (S.inQuiz) { e.preventDefault(); e.returnValue = ''; } });
+window.addEventListener('beforeunload', e => { if (S.inQuiz && !S.selftest) { e.preventDefault(); e.returnValue = ''; } });
 
 /* ===== 5. Questions ===== */
 function showQuestion(q) {
@@ -700,7 +812,7 @@ function stopClip() {
 }
 
 function snapshot(label) {
-  if (!S.stream || S.page.snapshots === false) return;
+  if (S.selftest || !S.stream || S.page.snapshots === false) return;
   const v = $('cam');
   if (!v.videoWidth) return;
   const c = document.createElement('canvas');
@@ -736,6 +848,7 @@ async function finish() {
   S.inQuiz = false;
   clearInterval(S.tick);
   clearInterval(S.camMon);
+  clearInterval(S.faceT);
   clearTimeout(S.snapT);
   $('awayWarn').classList.add('hidden');
   stopClip();
@@ -763,6 +876,86 @@ async function finish() {
     $('doneText').textContent = 'Your answers are saved. Please check your internet and re-open the link with your code, or contact HSE. (' + e.message + ')';
   }
 }
+
+
+/* ===== Proctoring self-test ===== */
+const ST_CHECKS = [
+  ['Mic noise', 'Voice / noise', 'Talk normally for 3 seconds.'],
+  ['More than one face', 'Another person', 'Bring a second person (or a photo of a face) into the camera for 2 seconds.'],
+  ['No face', 'Face missing', 'Move out of the camera for {none} seconds.'],
+  ['Looking away', 'Looking away', 'Turn your head to one side for {away} seconds.'],
+  ['Lots of movement', 'Lots of movement', 'Move your head (or the phone) from side to side quickly a few times.'],
+  ['Camera covered', 'Camera covered', 'Cover the camera with your hand for 6 seconds.'],
+  ['Tab switch', 'Leaving the page', 'Switch to another tab or app for a few seconds, then come back.'],
+  ['Window focus lost', 'Another window (PC)', 'PC only: click on another window or screen, then click back here.'],
+  ['Fullscreen exit', 'Leaving fullscreen (PC)', 'PC only: tap Enter fullscreen below, then press Esc.']
+];
+const ST = { res: {} };
+function stNote(t) { $('stNoteTxt').textContent = t; }
+function stRender() {
+  const P = S.page || {};
+  $('stTable').innerHTML = ST_CHECKS.map(c => {
+    const r = ST.res[c[0]];
+    const how = c[2].replace('{none}', P.faceMissingSec || 5).replace('{away}', P.lookAwaySec || 4);
+    return '<tr style="border-bottom:1px solid var(--line)"><td style="padding:8px 4px;vertical-align:top;width:34px;font-size:18px">' + (r ? '&#9989;' : '&#11036;') + '</td>' +
+      '<td style="padding:8px 4px;font-size:13px"><b>' + c[1] + '</b><br><span class="note">' + how + '</span>' +
+      (r ? '<br><span style="color:var(--green);font-size:12px">Detected ' + r.time + ' - ' + r.detail.replace(/[<>&]/g, '') + '</span>' : '') + '</td></tr>';
+  }).join('');
+}
+function stMark(type, detail) {
+  if (!ST.res[type]) { ST.res[type] = { time: new Date().toLocaleTimeString(), detail: String(detail || '') }; stRender(); }
+}
+function stMic(rms) {
+  if (!$('stMicNow')) return;
+  $('stMicNow').textContent = rms.toFixed(3);
+  $('stMicBar').style.width = Math.min(100, rms * 400) + '%';
+  if (S.micThr) { $('stMicThr').textContent = S.micThr.toFixed(3); $('stMicBase').textContent = S.micBase.toFixed(3); $('stThrMark').style.left = Math.min(100, S.micThr * 400) + '%'; }
+  if (S.inQuiz) { $('stFaces').textContent = S.faceN < 0 ? '…' : S.faceN; $('stYaw').textContent = S.faceN > 0 ? Math.abs(S.yaw).toFixed(2) : '–'; }
+}
+$('btnStStart').addEventListener('click', async () => {
+  $('stErr').textContent = '';
+  $('btnStStart').disabled = true;
+  try {
+    const r = await api('selftest', { token: S.stToken }, 1);
+    S.page = r.page || {};
+    S.selftest = true;
+    try { const C = window.AudioContext || window.webkitAudioContext; if (C && !S.audioCtx) { S.audioCtx = new C(); S.audioCtx.resume(); } } catch (e) {}
+    const g = await getMedia();
+    S.stream = g.stream;
+    if (!S.stream) throw new Error('Camera and microphone are not available: ' + errWhy(g.camErr));
+    const cam = $('cam');
+    $('stCamWrap').appendChild(cam);
+    cam.srcObject = S.stream; cam.classList.remove('hidden');
+    try { await cam.play(); } catch (e) {}
+    $('stIntro').classList.add('hidden'); $('stLive').classList.remove('hidden');
+    $('stYawMax').textContent = S.page.lookAwayLevel || 0.6;
+    stRender();
+    S.micHist = [];
+    if (S.stream.getAudioTracks().length) startMic(); else stNote('No microphone on this device.');
+    if (S.page.faceCheck !== false) loadFaceLib();
+    setTimeout(() => {
+      const m = micCalibrate();
+      S.inQuiz = true;
+      clearInterval(S.camMon);
+      S.camMon = setInterval(camMonitor, 2000);
+      faceStart();
+      stNote('Room level ' + m.base.toFixed(3) + ' - voice/noise is flagged above ' + m.thr.toFixed(3) + '. Now work through the list.');
+    }, 5000);
+  } catch (e) {
+    $('stErr').textContent = e.message;
+    $('btnStStart').disabled = false;
+  }
+});
+$('btnStFull').addEventListener('click', () => { if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {}); });
+$('btnStSave').addEventListener('click', async () => {
+  $('btnStSave').disabled = true; $('stSaved').textContent = 'Saving…';
+  const results = ST_CHECKS.map(c => ({ check: c[1], event: c[0], ok: !!ST.res[c[0]], detail: ST.res[c[0]] ? ST.res[c[0]].detail : '' }));
+  try {
+    await api('selftestSave', { token: S.stToken, device: deviceText(), micBase: S.micBase, micThr: S.micThr, faceLoaded: !!S.fd, results: results }, 2);
+    $('stSaved').textContent = 'Saved ✓ - see Admin › Proctoring Test.';
+  } catch (e) { $('stSaved').textContent = e.message; }
+  $('btnStSave').disabled = false;
+});
 
 function setStatus(id, cls, text) { const el = $(id); el.className = 'status ' + cls; el.textContent = text; }
 </script>
