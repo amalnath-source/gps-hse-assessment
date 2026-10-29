@@ -5,16 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>GPS HSE Competency Assessment</title>
 <style>
-:root{--navy:#0b2545;--teal:#13827a;--bg:#f4f6f9;--card:#fff;--text:#1d2733;--muted:#5d6b7a;--red:#c0392b;--amber:#b9770e;--green:#1e8449;--line:#dde3ea}
+:root{--navy:#6E4BD8;--teal:#6E4BD8;--bg:#FAF2F1;--card:#fff;--text:#1E1A22;--muted:#6F6573;--red:#B5573A;--amber:#C8714E;--green:#3E8E6A;--line:#EBDCDC;--soft:#F3ECFB;--terra:#FBEDE7;--terraink:#9C4528}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
 body.noselect{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-header{background:var(--navy);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px}
-header h1{font-size:15px;margin:0;font-weight:600}
-.bar-grad{height:4px;background:linear-gradient(90deg,#C0392B,#E8711A,#F5A623)}
-.testbanner{background:var(--red);color:#fff;text-align:center;font-size:12px;font-weight:700;padding:6px;letter-spacing:.5px}
+header{background:#fff;color:var(--text);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
+header h1{font-size:16px;margin:0;font-weight:800;letter-spacing:-.2px}
+.bar-grad{height:4px;background:linear-gradient(90deg,#6E4BD8,#9C7BEA,#C8714E)}
+.testbanner{background:var(--soft);color:#4B2F9E;text-align:center;font-size:12px;font-weight:700;padding:6px;letter-spacing:.5px}
+.practicebanner{background:var(--terra);color:var(--terraink);text-align:center;font-size:12px;font-weight:700;padding:7px;letter-spacing:.5px}
 main{max-width:680px;margin:0 auto;padding:16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
 h2{font-size:18px;margin:0 0 12px}
 p,li{font-size:14px;line-height:1.55}
 ul{padding-left:20px;margin:8px 0}
@@ -23,7 +24,7 @@ input[type=text]{width:100%;padding:12px;border:1px solid var(--line);border-rad
 #code{text-transform:uppercase;letter-spacing:3px;font-weight:700}
 .chk{display:flex;gap:10px;align-items:flex-start;font-size:13px;margin-top:14px;line-height:1.5}
 .chk input{margin-top:3px;width:18px;height:18px;flex:0 0 auto}
-button{background:var(--navy);color:#fff;border:0;border-radius:6px;padding:14px 16px;font-size:15px;font-weight:600;cursor:pointer;width:100%;margin-top:14px}
+button{background:var(--navy);color:#fff;border:0;border-radius:10px;padding:14px 16px;font-size:15px;font-weight:600;cursor:pointer;width:100%;margin-top:14px}
 button.secondary{background:#fff;color:var(--navy);border:1px solid var(--navy)}
 button:disabled{opacity:.45;cursor:not-allowed}
 .hidden{display:none!important}
@@ -45,7 +46,7 @@ video#cam.pip{position:fixed;right:10px;bottom:10px;width:96px;border:2px solid 
 .opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:#fff;color:var(--text);border:1px solid var(--line);margin-top:10px;padding:14px;font-weight:400;line-height:1.4}
 .opt .k{flex:0 0 26px;height:26px;border-radius:50%;background:var(--bg);color:var(--navy);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px}
 .opt:hover{border-color:var(--teal)}
-.opt.sel{border-color:var(--teal);background:#e8f6f4}
+.opt.sel{border-color:var(--navy);background:var(--soft)}
 .spinner{width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--navy);border-radius:50%;animation:spin 1s linear infinite;margin:20px auto}
 @keyframes spin{to{transform:rotate(360deg)}}
 .progress{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:12px 0}
@@ -53,9 +54,11 @@ video#cam.pip{position:fixed;right:10px;bottom:10px;width:96px;border:2px solid 
 .center{text-align:center}
 .note{font-size:12px;color:var(--muted)}
 .big{font-size:44px;line-height:1;margin:6px 0}
+.warnbox{background:var(--terra);color:var(--terraink);border-left:4px solid var(--amber);border-radius:6px;padding:10px 12px;font-size:13px;font-weight:600;margin:0 0 12px}
 </style>
 </head>
 <body class="noselect">
+<div id="practiceBanner" class="practicebanner hidden">PRACTICE ASSESSMENT &mdash; to learn the system; the result does not count</div>
 <div id="testBanner" class="testbanner hidden">TEST MODE &mdash; this attempt is not recorded as a real assessment</div>
 <header><h1>GPS HSE Competency Assessment</h1></header>
 <div class="bar-grad"></div>
@@ -64,7 +67,7 @@ video#cam.pip{position:fixed;right:10px;bottom:10px;width:96px;border:2px solid 
   <!-- 1. Login -->
   <section id="sLogin" class="card">
     <h2>Welcome</h2>
-    <p>Enter your Employee ID and the access code from your invitation email.</p>
+    <p>Enter your Employee ID (or the ID shown in your invitation email) and the access code.</p>
     <label for="empId">Employee ID</label>
     <input type="text" id="empId" inputmode="text" autocomplete="off">
     <label for="code">Access code</label>
@@ -80,7 +83,8 @@ video#cam.pip{position:fixed;right:10px;bottom:10px;width:96px;border:2px solid 
     <ul>
       <li>Your <b>camera and microphone</b> are used during the assessment.</li>
       <li><b>Short video clips and snapshots</b> are recorded and stored in the GPS Google Drive for verification of identity and integrity.</li>
-      <li>Leaving the page, switching apps and sustained voices or noise are recorded.</li>
+      <li>Leaving the page, switching to other apps or windows, covering or blocking the camera, and voices or noise are recorded and reviewed.</li>
+      <li>Any of these may lead to your assessment being reviewed or rejected.</li>
       <li>Video is deleted after verification; snapshots and results are kept as part of your competency record.</li>
     </ul>
     <div class="chk"><input type="checkbox" id="consent"><span>I am <b id="consentName"></b>, I am taking this assessment myself without help, and I agree to the monitoring and recording described above.</span></div>
@@ -94,7 +98,7 @@ video#cam.pip{position:fixed;right:10px;bottom:10px;width:96px;border:2px solid 
     <div class="status" id="camStatus">Requesting camera&hellip;</div>
     <label>Microphone (say a few words)</label>
     <div class="meter"><div id="micLevel"></div></div>
-    <div class="status" id="micStatus">Waiting for sound&hellip;</div>
+    <div class="status" id="micStatus">Requesting microphone&hellip;</div>
     <div class="err" id="deviceErr"></div>
     <button id="btnDeviceOk" disabled>Continue</button>
     <button id="btnRetryCam" class="secondary hidden">Try again</button>
@@ -110,18 +114,23 @@ video#cam.pip{position:fixed;right:10px;bottom:10px;width:96px;border:2px solid 
     <ul>
       <li>Each question has its <b>own timer</b>. When time runs out, it moves on automatically and counts as unanswered.</li>
       <li>Tap an answer to submit it. <b>You cannot go back</b> or change an answer.</li>
-      <li>Stay on this page. Do not switch apps, open other tabs or take calls.</li>
-      <li>Keep your face visible to the camera in good light.</li>
-      <li id="resumeNote" class="hidden"><b>You are resuming</b> an assessment already in progress. A question left open when the page closed counts as unanswered.</li>
+      <li>Stay on this page. Do not switch apps, windows or tabs, or take calls.</li>
+      <li>Keep your face visible to the camera in good light. Do not cover the camera or mute the microphone.</li>
+      <li>Find a quiet place and use a stable internet connection before you start.</li>
+      <li><b>The timer does not stop.</b> If you leave or close the page, the time keeps running.</li>
+      <li id="ruleResume">Finish in one go. <span id="rReopen">You can re-open the test only <b>once</b> (same link and code)</span>, and it must be completed within <b id="rMin">60 minutes</b> of starting, otherwise it is closed and submitted as it is.</li>
+      <li id="resumeNote" class="hidden"><b>You are resuming</b> an assessment already in progress. <span id="rResumeMore">This is recorded, and the test cannot be re-opened again.</span> A question left open when the page closed counts as unanswered.</li>
     </ul>
     <div class="err" id="startErr"></div>
     <button id="btnStart">Start the assessment</button>
+    <p class="note">If your camera or microphone stops working during the test, continue answering. It will be noted for the reviewer.</p>
   </section>
 
   <!-- 5. Question -->
   <section id="sQuiz" class="card hidden">
     <div class="qhead"><span id="qNum"></span><span id="qTime"></span></div>
     <div class="tbar"><div id="qBar"></div></div>
+    <div class="warnbox hidden" id="awayWarn">You left the assessment &ndash; this has been recorded.</div>
     <div class="qtext" id="qText"></div>
     <div id="qOpts"></div>
     <div class="err" id="quizErr"></div>
@@ -137,7 +146,7 @@ video#cam.pip{position:fixed;right:10px;bottom:10px;width:96px;border:2px solid 
   <section id="sDone" class="card hidden center">
     <div class="big" id="doneIcon">&#9203;</div>
     <h2 id="doneTitle">Submitting&hellip;</h2>
-    <p id="doneText">Please keep this page open while your recordings finish uploading.</p>
+    <p id="doneText">Please keep this page open while your assessment information is being saved.</p>
     <div class="progress" id="upProg"><div></div></div>
     <p class="note" id="upText"></p>
   </section>
@@ -153,7 +162,9 @@ const ENDPOINT = 'https://script.google.com/macros/s/AKfycbxvddSzFabiMR-6gfXsxmk
 const S = {
   empId: '', code: '', info: null, token: '', page: {}, stream: null, audioCtx: null, mime: '', ext: 'webm',
   recorder: null, uploads: [], upDone: 0, upFail: 0, inQuiz: false, q: null, deadline: 0, tick: null,
-  snapT: null, busy: false, micLoudSince: 0, micFlagged: false
+  snapT: null, busy: false, micLoudSince: 0, micFlagged: false,
+  micGen: 0, devGen: 0, micMax: 0, micTicks: 0, pending: [], events: [], evCount: {}, flagSnaps: 0,
+  away: null, awayT: null, camMon: null, darkN: 0, frozenN: 0, prevFrame: null, statCanvas: null, clipStart: 0, clipSeq: ''
 };
 const $ = id => document.getElementById(id);
 const screens = ['sLogin', 'sConsent', 'sDevice', 'sRules', 'sQuiz', 'sLoading', 'sDone'];
@@ -198,10 +209,12 @@ $('btnLogin').addEventListener('click', async () => {
     S.info = await api('check', { empId: S.empId, code: S.code });
     S.page = S.info.page || {};
     if (S.info.isTest || S.info.testMode) $('testBanner').classList.remove('hidden');
+    if (S.info.trial) { $('practiceBanner').classList.remove('hidden'); document.title = 'Practice - GPS HSE Competency Assessment'; }
     $('hello').textContent = 'Hello ' + S.info.name;
     $('consentName').textContent = S.info.name;
     $('fQ').textContent = S.info.total;
     $('resumeNote').classList.toggle('hidden', !S.info.resume);
+    fillRules();
     show('sConsent'); api('ping').catch(() => {});
   } catch (e) {
     $('loginErr').textContent = e.message;
@@ -209,6 +222,16 @@ $('btnLogin').addEventListener('click', async () => {
     $('btnLogin').disabled = false;
   }
 });
+
+/** Re-open limit and time limit in the instructions come from the Admin settings. */
+function fillRules() {
+  const maxR = S.page.maxResumes === undefined || S.page.maxResumes === '' ? 1 : Math.max(0, Number(S.page.maxResumes) || 0);
+  const mins = Number(S.page.abandonMin) || 180;
+  $('rReopen').innerHTML = maxR === 0 ? 'Once started, the test <b>cannot be re-opened</b>' :
+    'You can re-open the test only <b>' + (maxR === 1 ? 'once' : maxR + ' times') + '</b> (same link and code)';
+  $('rMin').textContent = mins % 60 === 0 && mins >= 120 ? (mins / 60) + ' hours' : mins + ' minutes';
+  $('rResumeMore').textContent = maxR <= 1 ? 'This is recorded, and the test cannot be re-opened again.' : 'This is recorded and counts towards the re-open limit.';
+}
 
 /* ===== 2. Consent ===== */
 $('consent').addEventListener('change', () => { $('btnConsent').disabled = !$('consent').checked; });
@@ -219,42 +242,156 @@ $('btnConsent').addEventListener('click', () => {
 });
 
 /* ===== 3. Device check ===== */
-async function startDevice() {
-  show('sDevice');
-  $('deviceErr').textContent = '';
-  $('btnRetryCam').classList.add('hidden');
-  const cam = $('cam');
-  $('camWrap').appendChild(cam);
-  const needCam = S.page.cameraRequired !== false;
-  try {
-    S.stream = await navigator.mediaDevices.getUserMedia({
-      video: { width: { ideal: 320 }, height: { ideal: 240 }, facingMode: 'user' }, audio: true
-    });
-    cam.srcObject = S.stream;
-    cam.classList.remove('hidden');
-    const live = S.stream.getVideoTracks().some(t => t.readyState === 'live');
-    setStatus('camStatus', live ? 'ok' : 'bad', live ? 'Camera working ✓' : 'Camera not delivering video');
-    S.mime = pickMime();
-    S.ext = S.mime.indexOf('mp4') > -1 ? 'mp4' : 'webm';
-    S.stream.getVideoTracks().forEach(t => t.addEventListener('ended', () => { if (S.inQuiz) logEvent('Camera lost', 'Camera track ended'); }));
-    startMic();
-    $('btnDeviceOk').disabled = needCam && !live;
-  } catch (err) {
-    const name = err && err.name ? err.name : '';
-    setStatus('camStatus', 'bad', 'Camera/microphone blocked ✗');
-    setStatus('micStatus', 'bad', 'Not available');
-    $('deviceErr').innerHTML = name === 'NotAllowedError'
-      ? 'Permission was refused. Allow camera and microphone for this site in your browser settings, then tap <b>Try again</b>.'
-      : 'Camera could not start (' + (name || 'error') + '). Close other apps using the camera and tap <b>Try again</b>.';
-    $('btnRetryCam').classList.remove('hidden');
-    $('btnDeviceOk').disabled = needCam;
+const DEV = { cam: 'wait', mic: 'wait', camWhy: '', micWhy: '' };
+function isMobile() { return /iPhone|iPad|Android|Mobile/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent)); }
+function errWhy(e) {
+  const n = e && e.name ? e.name : '';
+  if (n === 'NotAllowedError' || n === 'SecurityError') return 'not allowed';
+  if (n === 'NotFoundError' || n === 'OverconstrainedError' || n === 'DevicesNotFoundError') return 'not found';
+  if (n === 'NotReadableError' || n === 'TrackStartError') return 'in use by another app';
+  return 'could not start';
+}
+
+async function getMedia() {
+  const v = { width: { ideal: 320 }, height: { ideal: 240 }, facingMode: 'user' };
+  try { return { stream: await navigator.mediaDevices.getUserMedia({ video: v, audio: true }) }; }
+  catch (e) {
+    // find out which part failed, and keep the part that works
+    let vs = null, as = null, ve = null, ae = null;
+    try { vs = await navigator.mediaDevices.getUserMedia({ video: v }); } catch (x) { ve = x; }
+    try { as = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch (x) { ae = x; }
+    const tracks = [].concat(vs ? vs.getTracks() : [], as ? as.getTracks() : []);
+    return { stream: tracks.length ? new MediaStream(tracks) : null, camErr: vs ? null : (ve || e), micErr: as ? null : (ae || e) };
   }
 }
+
+function stopDevice() {
+  S.micGen++;
+  S.devGen++;
+  if (S.stream) { try { S.stream.getTracks().forEach(t => t.stop()); } catch (e) {} }
+  S.stream = null;
+}
+
+async function startDevice() {
+  show('sDevice');
+  $('deviceErr').innerHTML = '';
+  $('btnRetryCam').classList.add('hidden');
+  $('btnDeviceOk').disabled = true;
+  stopDevice();
+  const cam = $('cam');
+  $('camWrap').appendChild(cam);
+  DEV.cam = 'wait'; DEV.mic = 'wait'; DEV.camWhy = ''; DEV.micWhy = '';
+  setStatus('camStatus', '', 'Requesting camera…');
+  setStatus('micStatus', '', 'Requesting microphone…');
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    DEV.cam = 'bad'; DEV.mic = 'bad'; DEV.camWhy = DEV.micWhy = 'not supported by this browser';
+    return deviceVerdict();
+  }
+  const g = await getMedia();
+  S.stream = g.stream;
+  const vt = S.stream ? S.stream.getVideoTracks() : [];
+  const at = S.stream ? S.stream.getAudioTracks() : [];
+  if (vt.some(t => t.readyState === 'live')) {
+    cam.srcObject = S.stream;
+    cam.classList.remove('hidden');
+    try { await cam.play(); } catch (e) {}
+    vt.forEach(t => t.addEventListener('ended', () => { if (S.inQuiz) flagEvent('Camera lost', 'Camera stopped during the test', { noSnap: true }); }));
+    DEV.cam = 'checking';
+    checkCameraPicture();
+  } else {
+    cam.classList.add('hidden');
+    DEV.cam = 'bad'; DEV.camWhy = errWhy(g.camErr);
+  }
+  if (at.length) {
+    at.forEach(t => t.addEventListener('ended', () => { if (S.inQuiz) flagEvent('Mic lost', 'Microphone stopped during the test'); }));
+    startMic();
+  } else { DEV.mic = 'bad'; DEV.micWhy = errWhy(g.micErr); }
+  S.mime = pickMime();
+  S.ext = S.mime.indexOf('mp4') > -1 ? 'mp4' : 'webm';
+  deviceVerdict();
+}
+
+/** Small grey copy of the current camera picture: mean brightness, contrast and pixels. */
+function frameStats() {
+  const v = $('cam');
+  if (!v || !v.videoWidth) return null;
+  const c = S.statCanvas || (S.statCanvas = document.createElement('canvas'));
+  c.width = 32; c.height = 24;
+  const x = c.getContext('2d', { willReadFrequently: true });
+  try { x.drawImage(v, 0, 0, 32, 24); } catch (e) { return null; }
+  const d = x.getImageData(0, 0, 32, 24).data;
+  const g = new Float32Array(32 * 24);
+  let sum = 0;
+  for (let i = 0; i < g.length; i++) { g[i] = 0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2]; sum += g[i]; }
+  const mean = sum / g.length;
+  let vsum = 0;
+  for (let i = 0; i < g.length; i++) vsum += (g[i] - mean) * (g[i] - mean);
+  return { mean: mean, std: Math.sqrt(vsum / g.length), g: g };
+}
+/** Covered lens, very dark room or a blank flat picture. */
+function isCovered(st) { return st.mean < 25 || st.std < 6; }
+
+/** Device check: sample the picture for about 3 seconds before accepting the camera. */
+function checkCameraPicture() {
+  if (S.page.darkCheck === false) { DEV.cam = 'ok'; return deviceVerdict(); }
+  setStatus('camStatus', '', 'Checking the camera picture…');
+  let n = 0, covered = 0, tries = 0;
+  const gen = S.devGen;
+  (function sample() {
+    if (gen !== S.devGen) return;
+    const st = frameStats();
+    tries++;
+    if (st) { n++; if (isCovered(st)) covered++; }
+    if (n < 6 && tries < 20) return setTimeout(sample, 400);
+    DEV.cam = n && covered > n / 2 ? 'dark' : 'ok';
+    deviceVerdict();
+  })();
+}
+
+function deviceVerdict() {
+  const needCam = S.page.cameraRequired !== false, needMic = S.page.micRequired !== false;
+  if (DEV.cam === 'ok') setStatus('camStatus', 'ok', 'Camera working ✓');
+  else if (DEV.cam === 'dark') setStatus('camStatus', 'bad', 'Camera seems covered or too dark ✗');
+  else if (DEV.cam === 'bad') setStatus('camStatus', 'bad', 'Camera ' + DEV.camWhy + ' ✗');
+  if (DEV.mic === 'ok') setStatus('micStatus', 'ok', 'Microphone working ✓');
+  else if (DEV.mic === 'listening') setStatus('micStatus', '', 'Listening… please say a few words');
+  else if (DEV.mic === 'bad') setStatus('micStatus', 'bad', 'Microphone ' + DEV.micWhy + ' ✗');
+  const camReady = DEV.cam === 'ok' || (!needCam && (DEV.cam === 'bad' || DEV.cam === 'dark'));
+  const micReady = DEV.mic === 'ok' || (!needMic && DEV.mic !== 'wait');
+  $('btnDeviceOk').disabled = !(camReady && micReady);
+
+  const bad = [];
+  if (DEV.cam === 'bad') bad.push('camera');
+  if (DEV.mic === 'bad') bad.push('microphone');
+  let html = '';
+  if (bad.length) {
+    const what = bad.join(' and '), two = bad.length > 1;
+    const busy = DEV.camWhy === 'in use by another app' || DEV.micWhy === 'in use by another app';
+    html = isMobile()
+      ? 'We could not access your ' + what + '. Please allow ' + (two ? 'them' : 'it') + ' for this site in your phone\'s browser settings' + (busy ? ' and close other apps that may be using ' + (two ? 'them' : 'it') : '') + ', then tap <b>Try again</b>. If it still does not work, try another phone or contact HSE.'
+      : 'We could not access your ' + what + '. Please check that ' + (two ? 'they are' : 'it is') + ' connected and allowed for this site' + (busy ? ' and close other apps that may be using ' + (two ? 'them' : 'it') : '') + ', then tap <b>Try again</b>. If ' + (two ? 'they are' : 'it is') + ' not available or cannot be fixed, please take the assessment on your <b>mobile phone</b> using the same link, Employee ID and access code.';
+    if ((bad.indexOf('camera') > -1 && !needCam) || (bad.indexOf('microphone') > -1 && !needMic)) {
+      if (camReady && micReady) html += ' You can still continue, but this will be noted on your assessment.';
+    }
+  }
+  if (DEV.cam === 'dark') {
+    html = (html ? html + '<br><br>' : '') + 'Your camera seems covered, too dark or showing a blank view. Uncover the lens, face the camera in good light and tap <b>Try again</b>.';
+  }
+  $('deviceErr').innerHTML = html;
+  $('btnRetryCam').classList.toggle('hidden', !(bad.length || DEV.cam === 'dark'));
+}
+
 $('btnRetryCam').addEventListener('click', () => {
   try { const C = window.AudioContext || window.webkitAudioContext; if (C && !S.audioCtx) { S.audioCtx = new C(); S.audioCtx.resume(); } } catch (e) {}
   startDevice();
 });
-$('btnDeviceOk').addEventListener('click', () => { show('sRules'); api('ping').catch(() => {}); });
+$('btnDeviceOk').addEventListener('click', () => {
+  S.pending = [];
+  if (DEV.mic === 'bad') S.pending.push(['No microphone', 'Microphone ' + DEV.micWhy + ' at the device check']);
+  if (DEV.cam === 'bad') S.pending.push(['No camera', 'Camera ' + DEV.camWhy + ' at the device check']);
+  if (DEV.cam === 'dark') S.pending.push(['Camera covered', 'Camera covered or too dark at the device check']);
+  show('sRules'); api('ping').catch(() => {});
+});
 
 function pickMime() {
   if (!window.MediaRecorder) return '';
@@ -265,32 +402,38 @@ function pickMime() {
 
 function startMic() {
   const Ctx = window.AudioContext || window.webkitAudioContext;
-  if (!Ctx || !S.stream.getAudioTracks().length) { setStatus('micStatus', 'bad', 'No microphone'); return; }
+  if (!Ctx) { DEV.mic = 'bad'; DEV.micWhy = 'not supported by this browser'; return; }
   const ctx = S.audioCtx || new Ctx();
   S.audioCtx = ctx;
   if (ctx.state === 'suspended') ctx.resume();
   const an = ctx.createAnalyser();
   an.fftSize = 1024;
-  ctx.createMediaStreamSource(S.stream).connect(an);
+  ctx.createMediaStreamSource(new MediaStream(S.stream.getAudioTracks())).connect(an);
   const buf = new Uint8Array(an.fftSize);
-  let micOk = false;
+  const gen = ++S.micGen;
+  DEV.mic = 'listening';
   const level = Number(S.page.micLevel) || 0.08;
   const holdMs = Number(S.page.micMs) || 1500;
   (function tick() {
+    if (gen !== S.micGen) return;
     an.getByteTimeDomainData(buf);
     let sum = 0;
     for (let i = 0; i < buf.length; i++) { const x = (buf[i] - 128) / 128; sum += x * x; }
     const rms = Math.sqrt(sum / buf.length);
-    $('micLevel').style.width = Math.min(100, rms * 400) + '%';
-    if (!micOk && rms > 0.02) { micOk = true; setStatus('micStatus', 'ok', 'Microphone working ✓'); }
-    if (S.inQuiz && S.page.mic !== false) {
-      if (rms > level) {
-        if (!S.micLoudSince) S.micLoudSince = performance.now();
-        if (!S.micFlagged && performance.now() - S.micLoudSince > holdMs) {
-          S.micFlagged = true;
-          logEvent('Mic noise', 'Sustained voice/noise detected');
-        }
-      } else { S.micLoudSince = 0; S.micFlagged = false; }
+    if (!S.inQuiz) $('micLevel').style.width = Math.min(100, rms * 400) + '%';
+    if (DEV.mic === 'listening' && rms > 0.02) { DEV.mic = 'ok'; deviceVerdict(); }
+    if (S.inQuiz) {
+      S.micTicks++;
+      if (rms > S.micMax) S.micMax = rms;
+      if (S.page.mic !== false) {
+        if (rms > level) {
+          if (!S.micLoudSince) S.micLoudSince = performance.now();
+          if (!S.micFlagged && performance.now() - S.micLoudSince > holdMs) {
+            S.micFlagged = true;
+            flagEvent('Mic noise', 'Sustained voice/noise detected', { at: S.micLoudSince });
+          }
+        } else { S.micLoudSince = 0; S.micFlagged = false; }
+      }
     }
     requestAnimationFrame(tick);
   })();
@@ -309,8 +452,14 @@ $('btnStart').addEventListener('click', async () => {
     S.token = r.token;
     S.page = r.page || S.page;
     if (r.isTest || r.testMode) $('testBanner').classList.remove('hidden');
+    if (r.trial) $('practiceBanner').classList.remove('hidden');
     S.inQuiz = true;
-    if (S.stream) { const cam = $('cam'); document.body.appendChild(cam); cam.classList.add('pip'); }
+    (S.pending || []).forEach(x => logEvent(x[0], x[1], ''));
+    S.pending = [];
+    try { if (window.screen && window.screen.isExtended) logEvent('Extra monitor', 'A second screen is connected to this computer', ''); } catch (e) {}
+    if (S.stream && S.stream.getVideoTracks().length) { const cam = $('cam'); document.body.appendChild(cam); cam.classList.add('pip'); }
+    clearInterval(S.camMon);
+    if (S.page.darkCheck !== false && S.stream && S.stream.getVideoTracks().length) S.camMon = setInterval(camMonitor, 2000);
     snapshot('Start');
     const q = await api('question', { token: S.token });
     if (q.done) return finish();
@@ -330,20 +479,97 @@ function deviceText() {
 }
 
 /* ===== Integrity ===== */
+/** Every 2 s during the test: covered/dark picture (6 s in a row) and frozen picture (20 s in a row). */
+function camMonitor() {
+  if (!S.inQuiz || document.hidden) { S.prevFrame = null; S.frozenN = 0; return; }
+  const st = frameStats();
+  if (!st) return;
+  if (isCovered(st)) {
+    S.darkN++;
+    S.frozenN = 0;
+    if (S.darkN === 3) flagEvent('Camera covered', 'Camera covered, too dark or blank', { at: performance.now() - 4000 });
+  } else {
+    S.darkN = 0;
+    if (S.prevFrame) {
+      let diff = 0;
+      for (let i = 0; i < st.g.length; i++) diff += Math.abs(st.g[i] - S.prevFrame[i]);
+      if (diff / st.g.length < 0.05) {
+        S.frozenN++;
+        if (S.frozenN === 10) flagEvent('Camera frozen', 'Camera picture did not change for 20 s', { at: performance.now() - 20000 });
+      } else S.frozenN = 0;
+    }
+  }
+  S.prevFrame = st.g;
+}
+
+/** "at 12 s in Q7 clip" for a moment during the current question's video. */
+function clipAt(at, seq) {
+  if (!S.clipStart || !seq || S.clipSeq !== seq || at < S.clipStart) return '';
+  return ' | at ' + Math.round((at - S.clipStart) / 1000) + ' s in Q' + seq + ' clip';
+}
+
+/** Logs an integrity event with the clip time, and takes an evidence snapshot. */
+function flagEvent(type, detail, o) {
+  o = o || {};
+  if (!S.token) return;
+  S.evCount[type] = (S.evCount[type] || 0) + 1;
+  if (S.evCount[type] > 10) return;
+  const seq = o.seq !== undefined ? o.seq : (S.q ? S.q.seq : '');
+  const clip = o.clip !== undefined ? o.clip : clipAt(o.at || performance.now(), seq);
+  if (!o.noSnap && S.inQuiz && S.flagSnaps < 15 && S.page.snapshots !== false) {
+    S.flagSnaps++;
+    snapshot('Q' + seq + '_flag-' + type.replace(/[^A-Za-z]+/g, ''));
+  }
+  logEvent(type, detail + clip, seq);
+}
+
+function logEvent(type, detail, seq) {
+  if (!S.token) return;
+  const p = api('event', { token: S.token, type: type, detail: detail, seq: seq !== undefined ? seq : (S.q ? S.q.seq : '') }).catch(() => {});
+  S.events.push(p);
+}
+
+/** Leaving the page (tab/app switch) or, on a PC, clicking into another window or screen. */
+function awayStart(kind) {
+  if (!S.inQuiz) return;
+  if (S.away) { if (kind === 'Tab switch') S.away.kind = 'Tab switch'; return; }
+  const at = performance.now(), seq = S.q ? S.q.seq : '';
+  S.away = { kind: kind, t: at, seq: seq, clip: clipAt(at, seq) };
+  if (S.page.snapshots !== false && S.flagSnaps < 15) { S.flagSnaps++; snapshot('Q' + seq + '_flag-' + kind.replace(/[^A-Za-z]+/g, '')); }
+}
+function awayEnd(force) {
+  if (!S.away) return;
+  if (!force && (document.hidden || !document.hasFocus())) return;
+  const a = S.away;
+  S.away = null;
+  const secs = Math.max(1, Math.round((performance.now() - a.t) / 1000));
+  const what = a.kind === 'Tab switch' ? 'Left the assessment page' : 'Clicked into another window or screen';
+  flagEvent(a.kind, what + ' for ' + secs + ' s' + (force ? ' (still away when the test ended)' : ''), { seq: a.seq, clip: a.clip, noSnap: true });
+  if (!force && S.inQuiz) {
+    $('awayWarn').classList.remove('hidden');
+    clearTimeout(S.awayT);
+    S.awayT = setTimeout(() => $('awayWarn').classList.add('hidden'), 6000);
+  }
+}
 document.addEventListener('visibilitychange', () => {
-  if (S.inQuiz && document.hidden && S.page.tabDetect !== false) logEvent('Tab switch', 'Left the assessment page');
+  if (document.hidden) { if (S.page.tabDetect !== false) awayStart('Tab switch'); }
+  else awayEnd();
 });
+window.addEventListener('blur', () => {
+  if (S.page.focusDetect === false) return;
+  setTimeout(() => {
+    if (document.hasFocus()) return;
+    if (document.hidden) { if (S.page.tabDetect !== false) awayStart('Tab switch'); }
+    else awayStart('Window focus lost');
+  }, 300);
+});
+window.addEventListener('focus', () => awayEnd());
 document.addEventListener('fullscreenchange', () => {
-  if (S.inQuiz && !document.fullscreenElement && S.page.fullscreen !== false) logEvent('Fullscreen exit', 'Exited fullscreen');
+  if (S.inQuiz && !document.fullscreenElement && S.page.fullscreen !== false) flagEvent('Fullscreen exit', 'Exited fullscreen');
 });
 document.addEventListener('contextmenu', e => { if (S.inQuiz) e.preventDefault(); });
 ['copy', 'cut', 'paste'].forEach(ev => document.addEventListener(ev, e => { if (S.inQuiz) e.preventDefault(); }));
 window.addEventListener('beforeunload', e => { if (S.inQuiz) { e.preventDefault(); e.returnValue = ''; } });
-
-function logEvent(type, detail) {
-  if (!S.token) return;
-  api('event', { token: S.token, type: type, detail: detail, seq: S.q ? S.q.seq : '' }).catch(() => {});
-}
 
 /* ===== 5. Questions ===== */
 function showQuestion(q) {
@@ -427,6 +653,8 @@ function startClip(seq) {
   };
   rec.start(1000);
   S.recorder = rec;
+  S.clipStart = performance.now();
+  S.clipSeq = seq;
 }
 
 function stopClip() {
@@ -461,21 +689,27 @@ function updateUploadUi() {
   const total = S.uploads.length || 1;
   const done = S.upDone + S.upFail;
   $('upProg').firstElementChild.style.width = Math.round(done / total * 100) + '%';
-  $('upText').textContent = 'Recordings uploaded: ' + S.upDone + ' of ' + S.uploads.length + (S.upFail ? ' (' + S.upFail + ' failed)' : '');
+  $('upText').textContent = 'Saving… ' + Math.round(done / total * 100) + '%';
 }
 
 /* ===== 6. Finish ===== */
 async function finish() {
+  if (S.away) awayEnd(true);
+  if (S.stream && S.stream.getAudioTracks().length && S.micTicks > 120 && S.micMax < 0.002) flagEvent('Mic silent', 'No sound was picked up during the whole test', { noSnap: true });
   S.inQuiz = false;
   clearInterval(S.tick);
+  clearInterval(S.camMon);
   clearTimeout(S.snapT);
+  $('awayWarn').classList.add('hidden');
   stopClip();
+  S.clipStart = 0;
   show('sDone');
   $('cam').classList.add('hidden');
   if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
   await new Promise(r => setTimeout(r, 1200));
   updateUploadUi();
-  await Promise.allSettled(S.uploads);
+  await Promise.allSettled(S.uploads.concat(S.events));
+  S.micGen++;
   if (S.stream) S.stream.getTracks().forEach(t => t.stop());
   try {
     const r = await api('finish', { token: S.token }, 3);
@@ -484,7 +718,8 @@ async function finish() {
     let txt = 'Thank you. Your assessment is now under verification. Your result will be emailed to you once the review is complete.';
     if (r.score !== undefined) txt = 'Your score: ' + r.score + '% (' + r.result + '). ' + txt;
     $('doneText').textContent = txt;
-    if (S.upFail) $('upText').textContent += ' — some recordings could not be uploaded; the reviewer will be informed.';
+    $('upProg').firstElementChild.style.width = '100%';
+    $('upText').textContent = 'Saved ✓';
   } catch (e) {
     $('doneIcon').innerHTML = '&#9888;&#65039;';
     $('doneTitle').textContent = 'Could not submit yet';
