@@ -55,6 +55,11 @@ video#cam.pip{position:fixed;right:10px;bottom:10px;width:96px;border:2px solid 
 .progress div{height:100%;background:var(--green);width:0;transition:width .3s}
 .center{text-align:center}
 .note{font-size:12px;color:var(--muted)}
+.hat{display:block;margin:6px auto 4px}.hat .hatfill{transform:translateY(100%);animation:hatfill 3s linear infinite}
+@keyframes hatfill{0%{transform:translateY(100%)}85%{transform:translateY(0)}100%{transform:translateY(0)}}
+.tipbox{margin:16px 0 0;background:#FFF7F0;border:1px solid #F0D3C3;border-radius:12px;padding:14px;min-height:112px;text-align:left;transition:opacity .35s}
+.tipk{font-size:11px;font-weight:600;letter-spacing:.08em;color:#C8714E;text-transform:uppercase}.tipt{font-size:14px;line-height:1.5;margin-top:6px;color:var(--ink)}
+.tipdots{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;margin-top:10px}.tipdots i{width:6px;height:6px;border-radius:50%;background:#E3D3C8}.tipdots i.on{background:#C8714E}
 html.deep #sLogin{display:none!important}html.deep #sLoading{display:block!important}
 .verbox{border:1px solid var(--line);border-radius:10px;padding:14px;margin:14px 0 4px;background:#FFFCFA}
 .verbox .vt{font-weight:600;font-size:14px;margin:0 0 10px}
@@ -241,18 +246,20 @@ html.deep #sLogin{display:none!important}html.deep #sLoading{display:block!impor
 
   <!-- Loading -->
   <section id="sLoading" class="card hidden center">
-    <div class="spinner"></div>
-    <p id="loadingText" style="font-weight:600">Loading&hellip;</p>
-    <p class="note">This can take a few seconds.</p>
+    <svg class="hat" width="120" height="86" viewBox="0 0 120 86" aria-hidden="true"><defs><clipPath id="hatc1"><path d="M18 66 Q18 22 60 18 Q102 22 102 66 Z"/><rect x="8" y="64" width="104" height="11" rx="5"/></clipPath></defs><path d="M18 66 Q18 22 60 18 Q102 22 102 66 Z" fill="#F3E9DF"/><rect x="8" y="64" width="104" height="11" rx="5" fill="#EADBD3"/><g clip-path="url(#hatc1)"><rect class="hatfill" x="0" y="0" width="120" height="86" fill="#E8A33D"/></g><path d="M18 66 Q18 22 60 18 Q102 22 102 66 Z M8 69 h104" fill="none" stroke="#C8842A" stroke-width="2"/><rect x="55" y="15" width="10" height="51" rx="4" fill="#fff" opacity=".35"/></svg>
+    <p id="loadingText" style="font-weight:600;margin-bottom:2px">Loading&hellip;</p>
+    <p class="note" style="margin-top:0">This can take a few seconds.</p>
+    <div class="tipbox"><div class="tipk" id="tipK1">Did you know?</div><div class="tipt" id="tipT1"></div></div><div class="tipdots" id="tipD1"></div>
   </section>
 
   <!-- 6. Finish -->
   <section id="sDone" class="card hidden center">
-    <div class="big" id="doneIcon">&#9203;</div>
+    <div class="big" id="doneIcon"><svg class="hat" width="120" height="86" viewBox="0 0 120 86" aria-hidden="true"><defs><clipPath id="hatc2"><path d="M18 66 Q18 22 60 18 Q102 22 102 66 Z"/><rect x="8" y="64" width="104" height="11" rx="5"/></clipPath></defs><path d="M18 66 Q18 22 60 18 Q102 22 102 66 Z" fill="#F3E9DF"/><rect x="8" y="64" width="104" height="11" rx="5" fill="#EADBD3"/><g clip-path="url(#hatc2)"><rect class="hatfill" x="0" y="0" width="120" height="86" fill="#E8A33D"/></g><path d="M18 66 Q18 22 60 18 Q102 22 102 66 Z M8 69 h104" fill="none" stroke="#C8842A" stroke-width="2"/><rect x="55" y="15" width="10" height="51" rx="4" fill="#fff" opacity=".35"/></svg></div>
     <h2 id="doneTitle">Submitting&hellip;</h2>
     <p id="doneText">Please keep this page open while your assessment information is being saved.</p>
     <div class="progress" id="upProg"><div></div></div>
     <p class="note" id="upText"></p>
+    <div id="doneTips"><div class="tipbox"><div class="tipk" id="tipK2">Did you know?</div><div class="tipt" id="tipT2"></div></div><div class="tipdots" id="tipD2"></div></div>
     <!-- Thank-you + feedback (Safety Champion badge) -->
     <div id="thx" class="hidden">
       <div class="tbadge">
@@ -284,6 +291,48 @@ html.deep #sLogin{display:none!important}html.deep #sLoading{display:block!impor
 <script>
 var VER = {};                                              // confirmed email per box ('rq' / 'aw'): { ticket, email, name, how, until }
 var GSI = { loading: null, target: null, cid: undefined };  // Google sign-in
+/* Loading / submitting tips: GPS facts and the 9 Life-Saving Rules (from the GPS HSE Management System Manual) */
+var TIPS = (function () {
+  const facts = ['Every GPS employee, contractor and visitor can STOP any job they think is unsafe - without fear of reprisal.',
+    'The GPS Speak-Up Hotline 24392901 works in Arabic, English, Hindi and Urdu.',
+    'GPS believes there is no job that cannot be done safely - and that all incidents can be prevented.',
+    'Report every accident, however small, and every near miss. Near misses are free lessons.',
+    'Seat belts are for everyone in the vehicle - front and rear.',
+    'GPS HSE policies are displayed in Arabic, English and Hindi at every site and office.',
+    'Scan the QR code on any GPS HSE document to check that it is the latest revision.',
+    'Drink water regularly - hydration and heat stress management protect you in the Oman summer.',
+    'Harassment, discrimination and bullying are not tolerated at GPS.'];
+  const lsr = [['Bypassing Safety Controls', 'Get authorisation before overriding or disabling safety controls.'],
+    ['Energy Isolation', 'Verify isolation and zero energy before work begins.'],
+    ['Safe Mechanical Lifting', 'Plan the lift and never walk under a suspended load.'],
+    ['Confined Space', 'Get authorisation before entry - an attendant must be present at all times.'],
+    ['Hot Work', 'Control flammables and ignition sources; gas test before and during work.'],
+    ['Work Authorisation', 'Work with a valid permit when required; stop and reassess if conditions change.'],
+    ['Driving', 'Seatbelt on, no phone, keep to the speed limit, follow journey management.'],
+    ['Line of Fire', 'Keep yourself and others out of the line of fire.'],
+    ['Working at Height', 'Tie off 100% to approved anchor points.']];
+  const out = [];
+  for (let i = 0; i < Math.max(facts.length, lsr.length); i++) {
+    if (i < lsr.length) out.push(['Life-Saving Rule ' + (i + 1) + ' of 9 · ' + lsr[i][0], lsr[i][1]]);
+    if (i < facts.length) out.push(['Did you know?', facts[i]]);
+  }
+  return out;
+})();
+var TIP_I = Math.floor(Math.random() * TIPS.length);
+function tipNext(now) {
+  const t = TIPS[TIP_I];
+  ['1', '2'].forEach(n => {
+    const k = document.getElementById('tipK' + n), x = document.getElementById('tipT' + n), d = document.getElementById('tipD' + n);
+    if (!k) return;
+    const box = k.parentNode, set = () => { k.textContent = t[0]; x.textContent = t[1]; box.style.opacity = 1; };
+    if (now) set(); else { box.style.opacity = 0; setTimeout(set, 300); }
+    if (d) { if (!d.children.length) d.innerHTML = TIPS.map(() => '<i></i>').join(''); [...d.children].forEach((c, j) => c.classList.toggle('on', j === TIP_I)); }
+  });
+  TIP_I = (TIP_I + 1) % TIPS.length;
+}
+tipNext(true);   // the script runs at the end of the page, so the tip boxes already exist
+document.addEventListener('DOMContentLoaded', () => { try { S.hatHtml = document.getElementById('doneIcon').innerHTML; } catch (e) {} });
+setInterval(tipNext, 3500);
 /* ===== Settings ===== */
 const ENDPOINT = 'https://script.google.com/macros/s/AKfycbxvddSzFabiMR-6gfXsxmkGDWsbXwxRPuXnFJKFwYLuNt1YKgY3OoLDLfOz4i20o1Jmbw/exec';
 
@@ -967,7 +1016,7 @@ async function finish() {
     if (r.score !== undefined) showThanks(r.score + '%', r.result + ' · your result will be emailed after review', r.fb, 'page');
     else showThanks('Submitted', 'Your result will be emailed after review', r.fb, 'page', true);
   } catch (e) {
-    $('doneIcon').innerHTML = '&#9888;&#65039;';
+    $('doneIcon').innerHTML = '&#9888;&#65039;'; $('doneTips').classList.add('hidden');
     $('doneTitle').textContent = 'Could not submit yet';
     $('doneText').textContent = 'Your answers are saved. Please check your internet and re-open the link with your code, or contact HSE. (' + e.message + ')';
   }
@@ -977,7 +1026,7 @@ async function finish() {
 
 /* ===== Thank-you + feedback ===== */
 function showThanks(out, sub, fb, from, small) {
-  ['doneIcon', 'doneTitle', 'doneText', 'upProg', 'upText'].forEach(id => $(id).classList.add('hidden'));
+  ['doneIcon', 'doneTitle', 'doneText', 'upProg', 'upText', 'doneTips'].forEach(id => $(id).classList.add('hidden'));
   $('thx').classList.remove('hidden');
   $('thxOut').textContent = out || ''; $('thxOut').classList.toggle('hidden', !out); $('thxOut').classList.toggle('small', !!small);
   $('thxSub').textContent = sub || ''; $('thxSub').classList.toggle('hidden', !sub);
@@ -1006,7 +1055,7 @@ async function fbInit(id, k) {
     showThanks('', (r.name ? 'Hello ' + r.name + ' · ' : '') + ({ Real: 'HSE Competency Assessment', Practice: 'Practice Competency Assessment', Awareness: 'General HSE Awareness Quiz' }[r.kind] || ''), { id: id, k: k }, 'email');
     if (r.rating) { fbStars(r.rating); $('fbCmt').value = r.comment || ''; $('fbSend').textContent = 'Update feedback'; }
   } catch (e) {
-    show('sDone'); $('doneIcon').innerHTML = '&#9888;&#65039;'; $('doneTitle').textContent = 'Link not valid'; $('doneText').textContent = e.message;
+    show('sDone'); $('doneIcon').innerHTML = '&#9888;&#65039;'; $('doneTips').classList.add('hidden'); $('doneTitle').textContent = 'Link not valid'; $('doneText').textContent = e.message;
     $('upProg').classList.add('hidden');
   }
 }
@@ -1023,7 +1072,7 @@ function vesc(x) { return String(x == null ? '' : x).replace(/[&<>"]/g, c => ({ 
 function verLoadGsi(cid) {
   if (!GSI.loading) GSI.loading = new Promise((res, rej) => {
     const sc = document.createElement('script'); sc.src = 'https://accounts.google.com/gsi/client'; sc.async = true; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc);
-  }).then(() => google.accounts.id.initialize({ client_id: cid, callback: r => verGoogle(GSI.target, r.credential), ux_mode: 'popup', auto_select: false }));
+  }).then(() => google.accounts.id.initialize({ client_id: cid, callback: r => verGoogle(GSI.target, r.credential), ux_mode: 'popup', auto_select: false, use_fedcm_for_prompt: true, cancel_on_tap_outside: false, context: 'use' }));
   return GSI.loading;
 }
 async function verInit(p, opt) {
@@ -1034,34 +1083,22 @@ async function verInit(p, opt) {
   try { saved = JSON.parse(sessionStorage.getItem('gpsVer') || 'null'); } catch (e) { saved = null; }
   if (opt.ticket) saved = opt;
   if (saved && saved.ticket && saved.until > Date.now()) { verDone(p, saved); return; }
-  // One button: "Send me a code", which becomes "Confirm" once the code is sent. Google sign-in is a small link (only when set up).
-  box.innerHTML = '<p class="vt">Step 1 &middot; Confirm your email</p>' +
-    '<label for="' + p + 'Em">Email address</label><input type="text" id="' + p + 'Em" inputmode="email" autocomplete="email">' +
-    '<div id="' + p + 'S2" class="hidden"><div class="sent" id="' + p + 'Sent"></div><label for="' + p + 'Cd">6-digit code</label>' +
-    '<input type="text" id="' + p + 'Cd" inputmode="numeric" autocomplete="one-time-code" maxlength="6" style="letter-spacing:4px;font-weight:700"></div>' +
-    '<div class="err" id="' + p + 'VErr"></div>' +
-    '<button id="' + p + 'Btn">Send me a code</button>' +
-    '<div class="links hidden" id="' + p + 'Lk"><a href="#" id="' + p + 'Rs">Resend code</a> &middot; <a href="#" id="' + p + 'Ch">Change email</a></div>' +
-    '<div class="links hidden" id="' + p + 'GL">Have a Google account? <a href="#" id="' + p + 'GA">Sign in with Google instead</a></div><div class="gbtn hidden" id="' + p + 'G" style="margin-top:10px"></div>';
-  S['vs' + p] = 'send';
-  $(p + 'Btn').onclick = () => (S['vs' + p] === 'send' ? verSend(p) : verCheck(p));
-  $(p + 'Em').onkeydown = e => { if (e.key === 'Enter') verSend(p); };
-  $(p + 'Cd').onkeydown = e => { if (e.key === 'Enter') verCheck(p); };
-  $(p + 'Rs').onclick = e => { e.preventDefault(); verSend(p); };
-  $(p + 'Ch').onclick = e => { e.preventDefault(); S['vs' + p] = 'send'; $(p + 'Em').readOnly = false; $(p + 'Cd').value = ''; $(p + 'S2').classList.add('hidden'); $(p + 'Lk').classList.add('hidden'); $(p + 'Btn').textContent = 'Send me a code'; verErr(p, ''); $(p + 'Em').focus(); };
+  box.innerHTML = '<p class="vt">Step 1 &middot; Confirm your email address</p><div class="gbtn" id="' + p + 'G"></div><div class="or" id="' + p + 'Or">or get a code by email</div>' +
+    '<label for="' + p + 'Em">Email address</label><div class="row"><div><input type="text" id="' + p + 'Em" inputmode="email" autocomplete="email"></div><button class="secondary" id="' + p + 'Send">Send code</button></div>' +
+    '<div id="' + p + 'S2" class="hidden"><p class="note" id="' + p + 'Sent" style="margin:8px 0 0"></p><label for="' + p + 'Cd">6-digit code from the email</label>' +
+    '<div class="row"><div><input type="text" id="' + p + 'Cd" inputmode="numeric" autocomplete="one-time-code" maxlength="6" style="letter-spacing:4px;font-weight:700"></div><button id="' + p + 'Chk">Confirm</button></div></div>' +
+    '<div class="err" id="' + p + 'VErr"></div>';
+  $(p + 'Send').onclick = () => verSend(p);
+  $(p + 'Chk').onclick = () => verCheck(p);
   if (opt.clientId !== undefined) GSI.cid = opt.clientId;
   if (GSI.cid === undefined) { try { GSI.cid = (await api('authInfo', {}, 2)).googleClientId || ''; } catch (e) { GSI.cid = ''; } }
-  if (!GSI.cid || !$(p + 'GL')) return;
-  $(p + 'GL').classList.remove('hidden');
-  $(p + 'GA').onclick = async e => {
-    e.preventDefault();
-    $(p + 'GL').classList.add('hidden'); $(p + 'G').classList.remove('hidden');
-    try {
-      await verLoadGsi(GSI.cid);
-      GSI.target = p;
-      google.accounts.id.renderButton($(p + 'G'), { theme: 'outline', size: 'large', text: 'continue_with', shape: 'pill', width: Math.max(220, Math.min(320, box.clientWidth - 30)) });
-    } catch (err) { $(p + 'G').innerHTML = '<span class="note">Google sign-in could not load here - please use the email code.</span>'; }
-  };
+  if (!GSI.cid) { $(p + 'G').remove(); $(p + 'Or').remove(); return; }
+  try {
+    await verLoadGsi(GSI.cid);
+    GSI.target = p;
+    google.accounts.id.renderButton($(p + 'G'), { theme: 'outline', size: 'large', text: 'continue_with', shape: 'pill', width: Math.max(220, Math.min(320, box.clientWidth - 30)) });
+    try { google.accounts.id.prompt(); } catch (e) { /* the "Continue as…" pop-up is not available in this browser */ }
+  } catch (e) { $(p + 'G').innerHTML = '<span class="note">Google sign-in could not load here - use the email code below.</span>'; }
 }
 function verErr(p, m) { const e = $(p + 'VErr'); if (e) e.textContent = m || ''; }
 async function verGoogle(p, credential) {
@@ -1072,29 +1109,24 @@ async function verSend(p) {
   verErr(p, '');
   const em = $(p + 'Em').value.trim();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { verErr(p, 'Enter a valid email address.'); return; }
-  const btn = $(p + 'Btn');
-  btn.disabled = true; btn.textContent = 'Sending…';
+  $(p + 'Send').disabled = true;
   try {
     const r = await api('sendCode', { email: em }, 1);
-    S['vs' + p] = 'confirm';
-    $(p + 'Em').readOnly = true;
-    $(p + 'S2').classList.remove('hidden'); $(p + 'Lk').classList.remove('hidden');
-    $(p + 'Sent').innerHTML = 'We sent a 6-digit code to <b>' + vesc(r.email) + '</b>. Check your inbox (and spam). It is valid for ' + r.minutes + ' minutes.';
-    btn.textContent = 'Confirm';
+    $(p + 'S2').classList.remove('hidden');
+    $(p + 'Sent').textContent = 'We sent a code to ' + r.email + '. Check your inbox (and spam folder). It is valid for ' + r.minutes + ' minutes.';
+    $(p + 'Send').textContent = 'Resend';
     $(p + 'Cd').focus();
-  } catch (e) { verErr(p, e.message); btn.textContent = S['vs' + p] === 'send' ? 'Send me a code' : 'Confirm'; }
-  btn.disabled = false;
+  } catch (e) { verErr(p, e.message); }
+  $(p + 'Send').disabled = false;
 }
 async function verCheck(p) {
   verErr(p, '');
-  const code = $(p + 'Cd').value.replace(/\D/g, '');
-  if (code.length !== 6) { verErr(p, 'Enter the 6-digit code from the email.'); return; }
-  const btn = $(p + 'Btn');
-  btn.disabled = true; btn.textContent = 'Checking…';
-  try { verDone(p, await api('verifyCode', { email: $(p + 'Em').value.trim(), code: code }, 1)); return; } catch (e) { verErr(p, e.message); }
-  if ($(p + 'Btn')) { btn.disabled = false; btn.textContent = 'Confirm'; }
+  $(p + 'Chk').disabled = true;
+  try { verDone(p, await api('verifyCode', { email: $(p + 'Em').value.trim(), code: $(p + 'Cd').value.trim() }, 1)); } catch (e) { verErr(p, e.message); }
+  if ($(p + 'Chk')) $(p + 'Chk').disabled = false;
 }
 function verDone(p, r) {
+  try { if (window.google && google.accounts) google.accounts.id.cancel(); } catch (e) {}
   r.until = r.until || Date.now() + 5.5 * 3600000;
   VER[p] = r;
   try { sessionStorage.setItem('gpsVer', JSON.stringify(r)); } catch (e) {}
@@ -1216,13 +1248,14 @@ async function awFinish() {
   if (S.stream) { try { S.stream.getTracks().forEach(t => t.stop()); } catch (e) {} }
   $('cam').classList.add('hidden');
   show('sDone');
-  $('doneIcon').innerHTML = '&#9203;'; $('doneTitle').textContent = 'Submitting…'; $('doneText').textContent = 'Please wait a moment.';
+  if (S.hatHtml) $('doneIcon').innerHTML = S.hatHtml; $('doneTips').classList.remove('hidden');
+  $('doneTitle').textContent = 'Submitting…'; $('doneText').textContent = 'Please wait a moment.';
   $('upProg').classList.add('hidden'); $('upText').classList.add('hidden');
   try {
     const r = await api('awSubmit', { token: S.aw.token, answers: S.aw.answers, flags: S.aw.flags }, 3);
     showThanks(r.correct + ' / ' + r.total, Math.round(Number(r.score) || 0) + '% · answers emailed to you', r.fb, 'page');
   } catch (e) {
-    $('doneIcon').innerHTML = '&#9888;&#65039;'; $('doneTitle').textContent = 'Could not submit';
+    $('doneIcon').innerHTML = '&#9888;&#65039;'; $('doneTips').classList.add('hidden'); $('doneTitle').textContent = 'Could not submit';
     $('doneText').textContent = 'Please check your internet and press the button below to try again. (' + e.message + ')';
     $('doneText').insertAdjacentHTML('afterend', '<button id="awRetry">Try again</button>');
     $('awRetry').addEventListener('click', () => { $('awRetry').remove(); awFinish(); });
