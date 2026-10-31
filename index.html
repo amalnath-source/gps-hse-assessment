@@ -46,7 +46,8 @@ video#cam.pip{position:fixed;right:10px;bottom:10px;width:96px;border:2px solid 
 .qtext{font-size:17px;line-height:1.5;margin-bottom:6px;font-weight:500}
 .opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:#fff;color:var(--text);border:1px solid var(--line);margin-top:10px;padding:14px;font-weight:400;line-height:1.4}
 .opt .k{flex:0 0 26px;height:26px;border-radius:50%;background:var(--sand);color:var(--brown);font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px}
-.opt:hover{border-color:var(--teal)}
+@media (hover:hover) and (pointer:fine){.opt:hover{border-color:var(--teal)}}
+.opt:focus{outline:none}.opt:focus-visible{outline:2px solid var(--line)}
 .opt.sel{border-color:var(--navy);background:var(--soft)}
 .spinner{width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--navy);border-radius:50%;animation:spin 1s linear infinite;margin:20px auto}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -54,12 +55,34 @@ video#cam.pip{position:fixed;right:10px;bottom:10px;width:96px;border:2px solid 
 .progress div{height:100%;background:var(--green);width:0;transition:width .3s}
 .center{text-align:center}
 .note{font-size:12px;color:var(--muted)}
+html.deep #sLogin{display:none!important}html.deep #sLoading{display:block!important}
+.verbox{border:1px solid var(--line);border-radius:10px;padding:14px;margin:14px 0 4px;background:#FFFCFA}
+.verbox .vt{font-weight:600;font-size:14px;margin:0 0 10px}
+.verbox .gbtn{display:flex;justify-content:center;min-height:44px}
+.verbox .or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;margin:12px 0 4px}
+.verbox .or:before,.verbox .or:after{content:"";flex:1;border-top:1px solid var(--line)}
+.verbox .row{display:flex;gap:8px;align-items:flex-end}.verbox .row>div{flex:1}.verbox .row button{width:auto;margin-top:0;padding:12px 14px;white-space:nowrap}
+.verok{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 10px;background:#EAF5EF;color:#2F6E52;border-radius:8px;padding:10px 12px;font-size:14px}
+.verok span{min-width:0;overflow-wrap:anywhere}
+.verbox .links{font-size:12px;color:var(--muted);margin-top:10px;text-align:center}.verbox .links a{color:var(--brown)}
+.verbox .sent{background:#EAF5EF;color:#2F6E52;border-radius:8px;padding:10px 12px;font-size:13px;margin-top:10px}
+#thx .tbadge{background:linear-gradient(160deg,#FFF7F0,#FBEDE7);border:1px solid #F0D3C3;border-radius:16px;padding:16px 12px 12px;margin-bottom:12px}
+#thx .ribbon{display:inline-block;background:var(--terra-strong,#C8714E);color:#fff;font-size:11px;font-weight:600;letter-spacing:.1em;padding:4px 12px;border-radius:12px;margin-top:6px}
+#thx .tout{font-family:Poppins,Arial,sans-serif;font-weight:700;font-size:30px;color:#3E8E6A;margin:8px 0 0}#thx .tout.small{font-size:22px}
+#thx .tsub{color:var(--muted);font-size:13px;margin:2px 0 4px}
+#thx .tyt{font-family:Poppins,Arial,sans-serif;font-weight:600;font-size:16px;color:var(--brown);line-height:1.35;margin:4px 0 12px}
+#thx .stars{font-size:34px;letter-spacing:4px;user-select:none;margin:2px 0 6px}#thx .stars span{cursor:pointer;color:#E3D3C8;padding:0 2px}#thx .stars span.on{color:#E0A030}
+#thx textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px;font:14px Inter,Arial,sans-serif;min-height:64px;resize:vertical}
+#thx .okfb{background:#EAF5EF;color:#2F6E52;border-radius:8px;padding:12px;font-size:14px;font-weight:600}
+@keyframes thxpop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}#thx svg{animation:thxpop .7s ease-out both}.verok a{color:var(--brown);font-size:12px;white-space:nowrap}
+.verbox:has(.verok){padding:0;border:0;background:none}
 .big{font-size:44px;line-height:1;margin:6px 0}
 .warnbox{background:var(--terra);color:var(--terraink);border-left:4px solid var(--amber);border-radius:6px;padding:10px 12px;font-size:13px;font-weight:600;margin:0 0 12px}
 </style>
+<script>/* links from emails: show the spinner, not the login card, until the page script runs */ if (/[?&](request|aw|fb|retry|selftest)=/.test(location.search)) document.documentElement.className += ' deep';</script>
 </head>
 <body class="noselect">
-<div id="practiceBanner" class="practicebanner hidden">PRACTICE ASSESSMENT &mdash; to learn the system; the result does not count</div>
+<div id="practiceBanner" class="practicebanner hidden">PRACTICE COMPETENCY ASSESSMENT FOR HSE STAFF &mdash; to learn the system; the result does not count</div>
 <div id="testBanner" class="testbanner hidden">TEST ATTEMPT &mdash; not counted in statistics</div>
 <header><h1>GPS HSE Competency Assessment</h1></header>
 <div class="bar-grad"></div>
@@ -68,11 +91,55 @@ video#cam.pip{position:fixed;right:10px;bottom:10px;width:96px;border:2px solid 
   <!-- 0. Request another practice (link in the practice result email) -->
   <section id="sRetry" class="card hidden">
     <h2>Request another practice</h2>
-    <p id="retryText">Click the button below to get a new practice assessment code. It is emailed to you straight away, and you can start it right here.</p>
+    <p id="retryText">Click the button below to get a new Practice Competency Assessment code. It is emailed to you straight away, and you can start it right here.</p>
     <div class="err" id="retryErr"></div>
     <button id="btnRetry">Send me a new practice code</button>
     <button id="btnRetryStart" class="hidden">Start the practice now</button>
   </section>
+
+  <!-- Practice request from the launch email (?request=practice) -->
+  <section id="sReq" class="card hidden">
+    <h2>Practice Competency Assessment for HSE Staff</h2>
+    <p>Confirm your email and fill in your details. If you are in our HSE staff list, a <b>practice code</b> is emailed to you straight away. The practice works exactly like the real assessment, and the result does not count.</p>
+    <div id="rqVer" class="verbox"></div>
+    <div id="rqRest" class="hidden">
+      <label for="rqName">Full name</label><input type="text" id="rqName" autocomplete="name">
+      <label for="rqDes">Designation</label><input type="text" id="rqDes" placeholder="e.g. HSE Officer, HSE Advisor">
+      <label for="rqId">Employee ID</label><input type="text" id="rqId" autocomplete="off">
+      <label for="rqProj">Project / department (optional)</label><input type="text" id="rqProj">
+      <label>Are you HSE staff (working in an HSE role)?</label>
+      <div class="chk"><input type="radio" name="rqHse" id="rqHseY" value="yes"><label for="rqHseY" style="margin:0">Yes, I work in HSE</label></div>
+      <div class="chk"><input type="radio" name="rqHse" id="rqHseN" value="no"><label for="rqHseN" style="margin:0">No, I am in another role</label></div>
+      <div class="err" id="rqErr"></div>
+      <button id="btnReq">Send me a practice code</button>
+    </div>
+    <p class="note" style="margin-top:12px">Not in an HSE role? Take the short HSE Awareness Quiz instead - use the second button in the email.</p>
+  </section>
+
+  <!-- General Awareness quiz (?aw=TOPIC) - no code -->
+  <section id="sAw" class="card hidden">
+    <h2 id="awTitle">HSE Awareness Quiz</h2>
+    <p id="awDesc"></p>
+    <p class="note">For staff who are <b>not</b> in an HSE role. <span id="awCount">10</span> short questions, each with its own timer. One attempt per person.</p>
+    <div class="warnbox hidden" id="awNotReady">This quiz is not ready yet. Please try again later.</div>
+    <div id="awVer" class="verbox"></div>
+    <div id="awRest" class="hidden">
+      <label for="awName">Full name</label><input type="text" id="awName" autocomplete="name">
+      <label for="awDes">Designation</label><input type="text" id="awDes" placeholder="e.g. Site Engineer, Accountant, Driver">
+      <label for="awProj">Project / department (optional)</label><input type="text" id="awProj">
+      <label for="awId">Employee ID (optional)</label><input type="text" id="awId" autocomplete="off">
+      <label>Camera and microphone</label>
+      <div class="chk"><input type="radio" name="awCam" id="awCamY" value="yes"><label for="awCamY" style="margin:0">Yes, use my camera and microphone</label></div>
+      <div class="chk"><input type="radio" name="awCam" id="awCamN" value="no" checked><label for="awCamN" style="margin:0">No, take the quiz without them</label></div>
+      <div class="err" id="awErr"></div>
+      <button id="btnAw">Start the quiz</button>
+    </div>
+  </section>
+
+  <!-- Pop-up message -->
+  <div id="popup" class="hidden" style="position:fixed;inset:0;background:rgba(42,33,29,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20">
+    <div class="card" style="max-width:420px;margin:0"><h2 id="popTitle">Done</h2><p id="popText"></p><button id="popOk">OK</button></div>
+  </div>
 
   <!-- Proctoring self-test (link from Admin › Proctoring Test) -->
   <section id="sSelf" class="card hidden">
@@ -175,7 +242,8 @@ video#cam.pip{position:fixed;right:10px;bottom:10px;width:96px;border:2px solid 
   <!-- Loading -->
   <section id="sLoading" class="card hidden center">
     <div class="spinner"></div>
-    <p id="loadingText">Loading&hellip;</p>
+    <p id="loadingText" style="font-weight:600">Loading&hellip;</p>
+    <p class="note">This can take a few seconds.</p>
   </section>
 
   <!-- 6. Finish -->
@@ -185,12 +253,37 @@ video#cam.pip{position:fixed;right:10px;bottom:10px;width:96px;border:2px solid 
     <p id="doneText">Please keep this page open while your assessment information is being saved.</p>
     <div class="progress" id="upProg"><div></div></div>
     <p class="note" id="upText"></p>
+    <!-- Thank-you + feedback (Safety Champion badge) -->
+    <div id="thx" class="hidden">
+      <div class="tbadge">
+        <svg width="110" height="110" viewBox="0 0 110 110" aria-hidden="true">
+          <path d="M30 70 L22 104 L40 96 L48 108 L52 76 Z" fill="#C8714E"/><path d="M80 70 L88 104 L70 96 L62 108 L58 76 Z" fill="#A65A3B"/>
+          <circle cx="55" cy="48" r="40" fill="#6B4A3A"/><circle cx="55" cy="48" r="32" fill="#FFF7F0" stroke="#E3B48F" stroke-width="3"/>
+          <path d="M55 24 L59.5 35 L71 35.5 L62 42.5 L65 54 L55 47.5 L45 54 L48 42.5 L39 35.5 L50.5 35 Z" fill="#E0A030"/>
+          <text x="55" y="66" text-anchor="middle" font-family="Poppins,Arial" font-size="7.5" font-weight="700" fill="#6B4A3A">THANK YOU</text>
+        </svg>
+        <div><span class="ribbon">SAFETY CHAMPION</span></div>
+        <div class="tout" id="thxOut"></div>
+        <div class="tsub" id="thxSub"></div>
+      </div>
+      <div class="tyt">Thank you for your participation and commitment in keeping everyone safe</div>
+      <div id="fbBox">
+        <p class="note" style="margin:0">How was this assessment?</p>
+        <div class="stars" id="fbStars"><span data-v="1">&#9733;</span><span data-v="2">&#9733;</span><span data-v="3">&#9733;</span><span data-v="4">&#9733;</span><span data-v="5">&#9733;</span></div>
+        <textarea id="fbCmt" maxlength="1000" placeholder="Any suggestion to improve it? (optional)"></textarea>
+        <div class="err" id="fbErr"></div>
+        <button id="fbSend">Send feedback</button>
+      </div>
+      <div id="fbDone" class="hidden"><div class="okfb">&#10003; Thank you for your feedback! It helps us improve.</div><p class="note" style="margin-top:12px">You can now close this page.</p></div>
+    </div>
   </section>
 
   <video id="cam" autoplay playsinline muted class="hidden"></video>
 </main>
 
 <script>
+var VER = {};                                              // confirmed email per box ('rq' / 'aw'): { ticket, email, name, how, until }
+var GSI = { loading: null, target: null, cid: undefined };  // Google sign-in
 /* ===== Settings ===== */
 const ENDPOINT = 'https://script.google.com/macros/s/AKfycbxvddSzFabiMR-6gfXsxmkGDWsbXwxRPuXnFJKFwYLuNt1YKgY3OoLDLfOz4i20o1Jmbw/exec';
 
@@ -205,7 +298,7 @@ const S = {
 };
 const FD_BASE = 'https://cdn.jsdelivr.net/npm/@mediapipe/face_detection@0.4.1646425229/';
 const $ = id => document.getElementById(id);
-const screens = ['sSelf', 'sRetry', 'sLogin', 'sConsent', 'sDevice', 'sRules', 'sQuiz', 'sLoading', 'sDone'];
+const screens = ['sReq', 'sAw', 'sSelf', 'sRetry', 'sLogin', 'sConsent', 'sDevice', 'sRules', 'sQuiz', 'sLoading', 'sDone'];
 function show(id) { screens.forEach(s => $(s).classList.toggle('hidden', s !== id)); window.scrollTo(0, 0); }
 function loading(text) { $('loadingText').textContent = text || 'Loading…'; show('sLoading'); }
 
@@ -237,6 +330,10 @@ async function api(action, data, tries) {
   if (u.get('id')) $('empId').value = u.get('id');
   if (u.get('code')) $('code').value = u.get('code');
   if (u.get('retry')) { $('practiceBanner').classList.remove('hidden'); show('sRetry'); }
+  if (u.get('request')) { show('sReq'); verInit('rq'); }
+  if (u.get('aw')) awInit(u.get('aw'));
+  if (u.get('fb')) fbInit(u.get('fb'), u.get('k') || '');
+  document.documentElement.classList.remove('deep');
   if (u.get('selftest')) { S.stToken = u.get('selftest'); $('testBanner').textContent = 'PROCTORING SELF-TEST - nothing is recorded as an assessment'; $('testBanner').classList.remove('hidden'); show('sSelf'); }
 })();
 /* ===== 0. Request another practice ===== */
@@ -660,6 +757,7 @@ function clipAt(at, seq) {
 function flagEvent(type, detail, o) {
   o = o || {};
   if (S.selftest) return stMark(type, detail);
+  if (S.aw) { S.evCount[type] = (S.evCount[type] || 0) + 1; if (S.evCount[type] <= 5) S.aw.flags.push({ type: type, detail: detail + (S.q ? ' (Q' + S.q.seq + ')' : '') }); return; }
   if (!S.token) return;
   S.evCount[type] = (S.evCount[type] || 0) + 1;
   if (S.evCount[type] > 10) return;
@@ -673,7 +771,7 @@ function flagEvent(type, detail, o) {
 }
 
 function logEvent(type, detail, seq) {
-  if (S.selftest || !S.token) return;
+  if (S.selftest || S.aw || !S.token) return;
   const p = api('event', { token: S.token, type: type, detail: detail, seq: seq !== undefined ? seq : (S.q ? S.q.seq : '') }).catch(() => {});
   S.events.push(p);
 }
@@ -729,6 +827,7 @@ function showQuestion(q) {
   $('qNum').textContent = 'Question ' + q.seq + ' of ' + q.total;
   $('qText').textContent = q.text;
   const box = $('qOpts');
+  try { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch (e) {}
   box.innerHTML = '';
   q.options.forEach((o, i) => {
     const b = document.createElement('button');
@@ -763,6 +862,7 @@ function updateTimer() {
 async function answer(key, btn) {
   if (S.busy) return;
   S.busy = true;
+  if (S.aw) return awAnswer(key, btn);
   clearInterval(S.tick);
   clearTimeout(S.snapT);
   if (btn) btn.classList.add('sel');
@@ -812,7 +912,7 @@ function stopClip() {
 }
 
 function snapshot(label) {
-  if (S.selftest || !S.stream || S.page.snapshots === false) return;
+  if (S.selftest || S.aw || !S.stream || S.page.snapshots === false) return;
   const v = $('cam');
   if (!v.videoWidth) return;
   const c = document.createElement('canvas');
@@ -863,13 +963,9 @@ async function finish() {
   if (S.stream) S.stream.getTracks().forEach(t => t.stop());
   try {
     const r = await api('finish', { token: S.token }, 3);
-    $('doneIcon').innerHTML = '&#9989;';
-    $('doneTitle').textContent = 'Assessment submitted';
-    let txt = 'Thank you. Your assessment is now under verification. Your result will be emailed to you once the review is complete.';
-    if (r.score !== undefined) txt = 'Your score: ' + r.score + '% (' + r.result + '). ' + txt;
-    $('doneText').textContent = txt;
     $('upProg').firstElementChild.style.width = '100%';
-    $('upText').textContent = 'Saved ✓';
+    if (r.score !== undefined) showThanks(r.score + '%', r.result + ' · your result will be emailed after review', r.fb, 'page');
+    else showThanks('Submitted', 'Your result will be emailed after review', r.fb, 'page', true);
   } catch (e) {
     $('doneIcon').innerHTML = '&#9888;&#65039;';
     $('doneTitle').textContent = 'Could not submit yet';
@@ -877,6 +973,261 @@ async function finish() {
   }
 }
 
+
+
+/* ===== Thank-you + feedback ===== */
+function showThanks(out, sub, fb, from, small) {
+  ['doneIcon', 'doneTitle', 'doneText', 'upProg', 'upText'].forEach(id => $(id).classList.add('hidden'));
+  $('thx').classList.remove('hidden');
+  $('thxOut').textContent = out || ''; $('thxOut').classList.toggle('hidden', !out); $('thxOut').classList.toggle('small', !!small);
+  $('thxSub').textContent = sub || ''; $('thxSub').classList.toggle('hidden', !sub);
+  S.fb = fb || null; S.fbFrom = from || 'page';
+  $('fbBox').classList.toggle('hidden', !S.fb);
+  window.scrollTo(0, 0);
+}
+function fbStars(n) { S.fbRating = n; document.querySelectorAll('#fbStars span').forEach(x => x.classList.toggle('on', Number(x.dataset.v) <= n)); }
+document.querySelectorAll('#fbStars span').forEach(x => x.addEventListener('click', () => { fbStars(Number(x.dataset.v)); $('fbErr').textContent = ''; }));
+$('fbSend').addEventListener('click', async () => {
+  $('fbErr').textContent = '';
+  if (!S.fbRating) { $('fbErr').textContent = 'Please tap 1 to 5 stars first.'; return; }
+  $('fbSend').disabled = true; $('fbSend').textContent = 'Sending…';
+  try {
+    await api('feedback', { id: S.fb.id, k: S.fb.k, rating: S.fbRating, comment: $('fbCmt').value.trim(), from: S.fbFrom }, 2);
+    $('fbBox').classList.add('hidden'); $('fbDone').classList.remove('hidden');
+  } catch (e) { $('fbErr').textContent = e.message; }
+  $('fbSend').disabled = false; $('fbSend').textContent = 'Send feedback';
+});
+/* Feedback page from the "Give feedback" button in an email (?fb=ID&k=KEY) */
+async function fbInit(id, k) {
+  loading('Loading, please wait…');
+  try {
+    const r = await api('fbInfo', { id: id, k: k }, 2);
+    show('sDone');
+    showThanks('', (r.name ? 'Hello ' + r.name + ' · ' : '') + ({ Real: 'HSE Competency Assessment', Practice: 'Practice Competency Assessment', Awareness: 'General HSE Awareness Quiz' }[r.kind] || ''), { id: id, k: k }, 'email');
+    if (r.rating) { fbStars(r.rating); $('fbCmt').value = r.comment || ''; $('fbSend').textContent = 'Update feedback'; }
+  } catch (e) {
+    show('sDone'); $('doneIcon').innerHTML = '&#9888;&#65039;'; $('doneTitle').textContent = 'Link not valid'; $('doneText').textContent = e.message;
+    $('upProg').classList.add('hidden');
+  }
+}
+
+/* ===== Pop-up ===== */
+function popup(title, text, after) {
+  $('popTitle').textContent = title; $('popText').textContent = text;
+  $('popup').classList.remove('hidden');
+  $('popOk').onclick = () => { $('popup').classList.add('hidden'); if (after) after(); };
+}
+
+/* ===== Email confirmation: Sign in with Google, or a 6-digit code by email ===== */
+function vesc(x) { return String(x == null ? '' : x).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+function verLoadGsi(cid) {
+  if (!GSI.loading) GSI.loading = new Promise((res, rej) => {
+    const sc = document.createElement('script'); sc.src = 'https://accounts.google.com/gsi/client'; sc.async = true; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc);
+  }).then(() => google.accounts.id.initialize({ client_id: cid, callback: r => verGoogle(GSI.target, r.credential), ux_mode: 'popup', auto_select: false }));
+  return GSI.loading;
+}
+async function verInit(p, opt) {
+  opt = opt || {};
+  const box = $(p + 'Ver');
+  box.classList.remove('hidden');
+  let saved = null;
+  try { saved = JSON.parse(sessionStorage.getItem('gpsVer') || 'null'); } catch (e) { saved = null; }
+  if (opt.ticket) saved = opt;
+  if (saved && saved.ticket && saved.until > Date.now()) { verDone(p, saved); return; }
+  // One button: "Send me a code", which becomes "Confirm" once the code is sent. Google sign-in is a small link (only when set up).
+  box.innerHTML = '<p class="vt">Step 1 &middot; Confirm your email</p>' +
+    '<label for="' + p + 'Em">Email address</label><input type="text" id="' + p + 'Em" inputmode="email" autocomplete="email">' +
+    '<div id="' + p + 'S2" class="hidden"><div class="sent" id="' + p + 'Sent"></div><label for="' + p + 'Cd">6-digit code</label>' +
+    '<input type="text" id="' + p + 'Cd" inputmode="numeric" autocomplete="one-time-code" maxlength="6" style="letter-spacing:4px;font-weight:700"></div>' +
+    '<div class="err" id="' + p + 'VErr"></div>' +
+    '<button id="' + p + 'Btn">Send me a code</button>' +
+    '<div class="links hidden" id="' + p + 'Lk"><a href="#" id="' + p + 'Rs">Resend code</a> &middot; <a href="#" id="' + p + 'Ch">Change email</a></div>' +
+    '<div class="links hidden" id="' + p + 'GL">Have a Google account? <a href="#" id="' + p + 'GA">Sign in with Google instead</a></div><div class="gbtn hidden" id="' + p + 'G" style="margin-top:10px"></div>';
+  S['vs' + p] = 'send';
+  $(p + 'Btn').onclick = () => (S['vs' + p] === 'send' ? verSend(p) : verCheck(p));
+  $(p + 'Em').onkeydown = e => { if (e.key === 'Enter') verSend(p); };
+  $(p + 'Cd').onkeydown = e => { if (e.key === 'Enter') verCheck(p); };
+  $(p + 'Rs').onclick = e => { e.preventDefault(); verSend(p); };
+  $(p + 'Ch').onclick = e => { e.preventDefault(); S['vs' + p] = 'send'; $(p + 'Em').readOnly = false; $(p + 'Cd').value = ''; $(p + 'S2').classList.add('hidden'); $(p + 'Lk').classList.add('hidden'); $(p + 'Btn').textContent = 'Send me a code'; verErr(p, ''); $(p + 'Em').focus(); };
+  if (opt.clientId !== undefined) GSI.cid = opt.clientId;
+  if (GSI.cid === undefined) { try { GSI.cid = (await api('authInfo', {}, 2)).googleClientId || ''; } catch (e) { GSI.cid = ''; } }
+  if (!GSI.cid || !$(p + 'GL')) return;
+  $(p + 'GL').classList.remove('hidden');
+  $(p + 'GA').onclick = async e => {
+    e.preventDefault();
+    $(p + 'GL').classList.add('hidden'); $(p + 'G').classList.remove('hidden');
+    try {
+      await verLoadGsi(GSI.cid);
+      GSI.target = p;
+      google.accounts.id.renderButton($(p + 'G'), { theme: 'outline', size: 'large', text: 'continue_with', shape: 'pill', width: Math.max(220, Math.min(320, box.clientWidth - 30)) });
+    } catch (err) { $(p + 'G').innerHTML = '<span class="note">Google sign-in could not load here - please use the email code.</span>'; }
+  };
+}
+function verErr(p, m) { const e = $(p + 'VErr'); if (e) e.textContent = m || ''; }
+async function verGoogle(p, credential) {
+  verErr(p, '');
+  try { verDone(p, await api('googleSignIn', { credential: credential }, 1)); } catch (e) { verErr(p, e.message); }
+}
+async function verSend(p) {
+  verErr(p, '');
+  const em = $(p + 'Em').value.trim();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { verErr(p, 'Enter a valid email address.'); return; }
+  const btn = $(p + 'Btn');
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    const r = await api('sendCode', { email: em }, 1);
+    S['vs' + p] = 'confirm';
+    $(p + 'Em').readOnly = true;
+    $(p + 'S2').classList.remove('hidden'); $(p + 'Lk').classList.remove('hidden');
+    $(p + 'Sent').innerHTML = 'We sent a 6-digit code to <b>' + vesc(r.email) + '</b>. Check your inbox (and spam). It is valid for ' + r.minutes + ' minutes.';
+    btn.textContent = 'Confirm';
+    $(p + 'Cd').focus();
+  } catch (e) { verErr(p, e.message); btn.textContent = S['vs' + p] === 'send' ? 'Send me a code' : 'Confirm'; }
+  btn.disabled = false;
+}
+async function verCheck(p) {
+  verErr(p, '');
+  const code = $(p + 'Cd').value.replace(/\D/g, '');
+  if (code.length !== 6) { verErr(p, 'Enter the 6-digit code from the email.'); return; }
+  const btn = $(p + 'Btn');
+  btn.disabled = true; btn.textContent = 'Checking…';
+  try { verDone(p, await api('verifyCode', { email: $(p + 'Em').value.trim(), code: code }, 1)); return; } catch (e) { verErr(p, e.message); }
+  if ($(p + 'Btn')) { btn.disabled = false; btn.textContent = 'Confirm'; }
+}
+function verDone(p, r) {
+  r.until = r.until || Date.now() + 5.5 * 3600000;
+  VER[p] = r;
+  try { sessionStorage.setItem('gpsVer', JSON.stringify(r)); } catch (e) {}
+  $(p + 'Ver').innerHTML = '<div class="verok"><span>&#10003; Email confirmed: <b>' + vesc(r.email) + '</b></span><a href="#" id="' + p + 'Chg">Use another email</a></div>';
+  $(p + 'Chg').onclick = ev => { ev.preventDefault(); verReset(p); };
+  const nm = $(p + 'Name');
+  if (nm && !nm.value && r.name) nm.value = r.name;
+  $(p + 'Rest').classList.remove('hidden');
+}
+function verReset(p) {
+  VER[p] = null;
+  try { sessionStorage.removeItem('gpsVer'); } catch (e) {}
+  $(p + 'Rest').classList.add('hidden');
+  verInit(p);
+}
+function verExpired(m) { return /confirm your email address again/i.test(m || ''); }
+
+/* ===== Practice request (launch email) ===== */
+$('btnReq').addEventListener('click', async () => {
+  $('rqErr').textContent = '';
+  const v = VER.rq;
+  if (!v) { $('rqErr').textContent = 'Please confirm your email address first.'; return; }
+  const hse = document.querySelector('input[name=rqHse]:checked');
+  const data = { ticket: v.ticket, name: $('rqName').value.trim(), designation: $('rqDes').value.trim(), empId: $('rqId').value.trim(),
+    project: $('rqProj').value.trim(), hse: hse ? hse.value : '' };
+  if (!data.name || !data.designation || !data.empId || !data.hse) { $('rqErr').textContent = 'Please fill in your name, designation and Employee ID, and choose Yes or No.'; return; }
+  $('btnReq').disabled = true;
+  try {
+    const r = await api('requestPractice', data, 1);
+    if (r.awareness) {
+      if (!r.topic) popup('HSE Awareness Quiz', 'The awareness quiz is not open at the moment. Please try again later.');
+      else popup('HSE Awareness Quiz', 'As you are not in an HSE role, please take the short HSE Awareness Quiz instead - no code is needed.', () => {
+        history.replaceState(null, '', location.pathname + '?aw=' + encodeURIComponent(r.topic));
+        awInit(r.topic, { name: data.name, designation: data.designation, empId: data.empId, project: data.project, ver: v });
+      });
+    } else {
+      popup('Thank you', r.message);
+      $('btnReq').classList.add('hidden');
+    }
+  } catch (e) {
+    if (verExpired(e.message)) verReset('rq');
+    $('rqErr').textContent = e.message;
+  }
+  $('btnReq').disabled = false;
+});
+
+/* ===== General Awareness quiz ===== */
+async function awInit(topic, pre) {
+  S.awTopic = topic;
+  pre = pre || {};
+  if (pre.name) $('awName').value = pre.name;
+  if (pre.designation) $('awDes').value = pre.designation;
+  if (pre.empId) $('awId').value = pre.empId;
+  if (pre.project) $('awProj').value = pre.project;
+  $('awVer').classList.add('hidden');
+  loading('Loading, please wait…');
+  try {
+    const r = await api('awInfo', { topic: topic }, 2);
+    show('sAw');
+    $('awTitle').textContent = r.topic; $('awDesc').textContent = r.description; $('awCount').textContent = r.total;
+    S.page = Object.assign({}, r.page || {}, { video: false, snapshots: false, fullscreen: false });
+    if (r.ready === false) { $('awNotReady').classList.remove('hidden'); $('awRest').classList.add('hidden'); return; }
+    verInit('aw', Object.assign({ clientId: r.googleClientId || '' }, pre.ver || {}));
+  } catch (e) { show('sAw'); $('awNotReady').textContent = e.message; $('awNotReady').classList.remove('hidden'); }
+}
+$('btnAw').addEventListener('click', async () => {
+  $('awErr').textContent = '';
+  const v = VER.aw;
+  if (!v) { $('awErr').textContent = 'Please confirm your email address first.'; return; }
+  const cam = document.querySelector('input[name=awCam]:checked').value === 'yes';
+  const d = { topic: S.awTopic, ticket: v.ticket, name: $('awName').value.trim(), designation: $('awDes').value.trim(), project: $('awProj').value.trim(), empId: $('awId').value.trim(), camera: cam, device: deviceText() };
+  if (!d.name || !d.designation) { $('awErr').textContent = 'Please fill in your name and designation.'; return; }
+  $('btnAw').disabled = true;
+  loading('Preparing your questions…');
+  try {
+    const r = await api('awStart', d, 1);
+    S.aw = { token: r.token, qs: r.questions, i: 0, answers: [], flags: [], t0: 0 };
+    if (cam) {
+      try { const C = window.AudioContext || window.webkitAudioContext; if (C && !S.audioCtx) { S.audioCtx = new C(); S.audioCtx.resume(); } } catch (e) {}
+      const g = await getMedia();
+      S.stream = g.stream;
+      if (S.stream && S.stream.getVideoTracks().length) { const vv = $('cam'); vv.srcObject = S.stream; vv.classList.remove('hidden'); document.body.appendChild(vv); vv.classList.add('pip'); try { await vv.play(); } catch (e) {} }
+      if (S.stream && S.stream.getAudioTracks().length) { S.micHist = []; startMic(); await new Promise(res => setTimeout(res, 2500)); micCalibrate(); }
+      if (S.stream && S.stream.getVideoTracks().length) { clearInterval(S.camMon); S.camMon = setInterval(camMonitor, 2000); if (S.page.faceCheck !== false) loadFaceLib(); }
+    }
+    S.inQuiz = true;
+    if (cam) faceStart();
+    awShow();
+  } catch (e) {
+    show('sAw');
+    if (verExpired(e.message)) verReset('aw');
+    $('awErr').textContent = e.message;
+  }
+  $('btnAw').disabled = false;
+});
+function awShow() {
+  const q = S.aw.qs[S.aw.i];
+  S.aw.t0 = Date.now();
+  showQuestion({ seq: q.seq, total: S.aw.qs.length, text: q.text, options: q.options, limit: q.limit, remaining: q.limit });
+  clearInterval(S.tick);
+  S.tick = setInterval(updateTimer, 250);
+  updateTimer();
+}
+function awAnswer(key, btn) {
+  clearInterval(S.tick);
+  if (btn) btn.classList.add('sel');
+  Array.prototype.forEach.call(document.querySelectorAll('.opt'), b => { b.disabled = true; });
+  const q = S.aw.qs[S.aw.i];
+  S.aw.answers.push({ qid: q.qid, key: key || '', secs: Math.round((Date.now() - S.aw.t0) / 100) / 10 });
+  S.aw.i++;
+  if (S.aw.i < S.aw.qs.length) return setTimeout(awShow, 250);
+  awFinish();
+}
+async function awFinish() {
+  if (S.away) awayEnd(true);
+  S.inQuiz = false;
+  clearInterval(S.camMon); clearInterval(S.faceT);
+  S.micGen++;
+  if (S.stream) { try { S.stream.getTracks().forEach(t => t.stop()); } catch (e) {} }
+  $('cam').classList.add('hidden');
+  show('sDone');
+  $('doneIcon').innerHTML = '&#9203;'; $('doneTitle').textContent = 'Submitting…'; $('doneText').textContent = 'Please wait a moment.';
+  $('upProg').classList.add('hidden'); $('upText').classList.add('hidden');
+  try {
+    const r = await api('awSubmit', { token: S.aw.token, answers: S.aw.answers, flags: S.aw.flags }, 3);
+    showThanks(r.correct + ' / ' + r.total, Math.round(Number(r.score) || 0) + '% · answers emailed to you', r.fb, 'page');
+  } catch (e) {
+    $('doneIcon').innerHTML = '&#9888;&#65039;'; $('doneTitle').textContent = 'Could not submit';
+    $('doneText').textContent = 'Please check your internet and press the button below to try again. (' + e.message + ')';
+    $('doneText').insertAdjacentHTML('afterend', '<button id="awRetry">Try again</button>');
+    $('awRetry').addEventListener('click', () => { $('awRetry').remove(); awFinish(); });
+  }
+}
 
 /* ===== Proctoring self-test ===== */
 const ST_CHECKS = [
